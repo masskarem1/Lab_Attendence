@@ -9,6 +9,9 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -48,37 +51,62 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen py-8">
+<body class="bg-gray-100">
 
-    <div class="w-full max-w-2xl mx-auto p-6 md:p-8 bg-white rounded-xl shadow-lg">
-        <header class="text-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
-            <p class="text-gray-500 mt-2">Enter your Student ID to view your detailed attendance and marks.</p>
-        </header>
-
-        <main>
-            <!-- Search Input -->
-            <div class="relative">
-                <input type="text" id="studentIdInput" placeholder="Enter your Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
-                    Search
-                </button>
+    <div class="w-full max-w-4xl mx-auto p-4 md:p-6">
+        <!-- Header -->
+        <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
+            <div class="flex-shrink-0">
+                <!-- IMPORTANT: Replace this placeholder with the path to your MUST.png logo -->
+                <img src="https://placehold.co/100x100/1e3c72/ffffff?text=MUST" alt="MUST Logo" class="h-24 w-24 object-contain" />
             </div>
-
-            <!-- Loading Spinner -->
-            <div id="loading" class="text-center mt-6 hidden">
-                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                 <p class="text-gray-500 mt-2">Fetching data...</p>
+            <div class="ml-6 flex-grow">
+                <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
+                <p class="text-sm md:text-base" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
             </div>
+        </div>
 
-            <!-- Results Display Area -->
-            <div id="results" class="mt-6">
-                <!-- Student data will be dynamically inserted here -->
-            </div>
-             <!-- Error Message -->
-            <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
-        </main>
+        <!-- Main Content Card -->
+        <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <header class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
+                <p class="text-gray-500 mt-2">Enter your Student ID to view your detailed attendance and marks.</p>
+            </header>
+
+            <main>
+                <!-- Search Input -->
+                <div class="relative">
+                    <input type="text" id="studentIdInput" placeholder="Enter your Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                    <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
+                        Search
+                    </button>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loading" class="text-center mt-6 hidden">
+                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                     <p class="text-gray-500 mt-2">Fetching data...</p>
+                </div>
+
+                <!-- Results Display Area -->
+                <div id="results" class="mt-6">
+                    <!-- Student data will be dynamically inserted here -->
+                </div>
+                 <!-- Error Message -->
+                <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
+            </main>
+        </div>
     </div>
+    
+    <!-- Footer -->
+    <footer class="w-full text-center p-6 mt-auto">
+        <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
+        <div class="mt-2 text-gray-500 text-sm">
+            <p>Dr. Mohamed Ali</p>
+            <p>Center of Basic Sciences, Physics Department</p>
+            <p>+201002836484</p>
+        </div>
+    </footer>
 
     <script>
         // --- CONFIGURATION ---
@@ -117,7 +145,14 @@
          * @returns {Array<Object>} An array of student objects.
          */
         function parseComplexCSV(text) {
-            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
+            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => {
+                // Trim and remove quotes if they exist at the start/end of a cell
+                let cleanCell = cell.trim();
+                if (cleanCell.startsWith('"') && cleanCell.endsWith('"')) {
+                    cleanCell = cleanCell.substring(1, cleanCell.length - 1);
+                }
+                return cleanCell;
+            }));
             if (rows.length < 5) return [];
 
             // From the image, topics are in row 0, dates in row 1, main headers in row 3
@@ -136,6 +171,14 @@
                 if (dateRow[i]) currentDate = dateRow[i];
                 
                 let header = headerRow[i];
+
+                // **FIX:** Explicitly assign a key for the section column (index 5)
+                // This avoids issues with how Google Sheets exports the 'F' header.
+                if (i === 5) { // The 'F' column for Section is the 6th column (index 5)
+                    structuredHeaders.push('Section');
+                    continue;
+                }
+                
                 if (header === 'Att.' || header === 'Deg.') {
                     // Combine Topic, Date, and Header for uniqueness
                     structuredHeaders.push(`${currentTopic}|${currentDate}|${header}`);
@@ -198,26 +241,82 @@
                 const item = topics[key];
                 // Checkbox in CSV becomes 'TRUE' or 'FALSE'
                 const attendanceMark = item.attendance.toUpperCase() === 'TRUE' ? '<span class="attendance-tick">✓</span>' : '<span class="attendance-cross">✗</span>';
-                tableRows += `
-                    <tr>
-                        <td>${item.topic}</td>
-                        <td>${item.date}</td>
-                        <td class="text-center">${attendanceMark}</td>
-                        <td class="text-center">${item.degree || 'N/A'}</td>
-                    </tr>
+
+                if (item.topic === 'End of Experiments') {
+                    tableRows += `
+                        <tr>
+                            <td>${item.topic}</td>
+                            <td>${item.date}</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    `;
+                } else if (item.topic === 'Revision') {
+                    tableRows += `
+                        <tr>
+                            <td>${item.topic}</td>
+                            <td>${item.date}</td>
+                            <td class="text-center">${attendanceMark}</td>
+                            <td></td>
+                        </tr>
+                    `;
+                } else {
+                    tableRows += `
+                        <tr>
+                            <td>${item.topic}</td>
+                            <td>${item.date}</td>
+                            <td class="text-center">${attendanceMark}</td>
+                            <td class="text-center">${item.degree || 'N/A'}</td>
+                        </tr>
+                    `;
+                }
+            }
+            
+            // --- Progress Bar & Score Color Logic ---
+            const totalScore = parseFloat(student['Total']);
+            const maxScore = 10;
+            let progressBarHtml = '';
+            let scoreColorClass = 'text-gray-700'; // Default color for N/A scores
+            let progressBarColorClass = 'bg-gray-400';
+
+            if (!isNaN(totalScore)) {
+                if (totalScore >= 9) { // Excellent
+                    scoreColorClass = 'text-green-700';
+                    progressBarColorClass = 'bg-green-700';
+                } else if (totalScore >= 7) { // Good
+                    scoreColorClass = 'text-green-500';
+                    progressBarColorClass = 'bg-green-500';
+                } else if (totalScore >= 5) { // Average
+                    scoreColorClass = 'text-yellow-500';
+                    progressBarColorClass = 'bg-yellow-500';
+                } else if (totalScore >= 3) { // Poor
+                    scoreColorClass = 'text-orange-500';
+                    progressBarColorClass = 'bg-orange-500';
+                } else { // Failing
+                    scoreColorClass = 'text-red-600';
+                    progressBarColorClass = 'bg-red-600';
+                }
+
+                const progressPercentage = Math.min((totalScore / maxScore) * 100, 100); // Cap at 100%
+                progressBarHtml = `
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                        <div class="${progressBarColorClass} h-2.5 rounded-full" style="width: ${progressPercentage}%"></div>
+                    </div>
                 `;
             }
 
             const resultCard = `
                 <div class="bg-gray-50 p-6 rounded-lg border border-gray-200 fade-in">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-800">${student['Name']}</h2>
                             <p class="text-gray-500">Student ID: ${student['Id']}</p>
+                            <p class="text-gray-500 mt-1">Section: ${student['Section'] || 'N/A'}</p>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right flex-shrink-0 w-1/3">
                             <p class="text-sm font-medium text-gray-500">Total Score</p>
-                            <p class="text-3xl font-bold text-blue-600">${student['Total'] || 'N/A'}</p>
+                            <p class="text-3xl font-bold ${scoreColorClass}">${student['Total'] || 'N/A'} / ${maxScore}</p>
+                            ${progressBarHtml}
                         </div>
                     </div>
                     <div class="overflow-x-auto">
