@@ -109,7 +109,7 @@
 
     <script>
         // --- CONFIGURATION ---
-        const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?gid=1650908858&single=true&output=csv';
+        const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?gid=1650908958&single=true&output=csv';
 
         // --- DOM ELEMENTS ---
         const studentIdInput = document.getElementById('studentIdInput');
@@ -132,7 +132,7 @@
                 studentData = parseComplexCSV(csvText);
             } catch (error) {
                 console.error('Failed to fetch or parse data:', error);
-                showError('Could not load student data. Please check the sheet URL.');
+                showError('Could not load student data. Please check the sheet URL and your internet connection.');
             } finally {
                 loadingDiv.classList.add('hidden');
             }
@@ -205,14 +205,19 @@
             
             await fetchData();
 
-            if (studentData.length === 0) return;
+            if (studentData.length === 0 && !errorDiv.textContent) {
+                showError('No student data was loaded. Please check the spreadsheet format.');
+                return;
+            };
             
             const student = studentData.find(s => s['Id'] === searchId);
 
             if (student) {
                 displayStudentInfo(student);
             } else {
-                showError(`No record found for Student ID: ${searchId}`);
+                if (!errorDiv.textContent) { // Don't overwrite a fetch error
+                    showError(`No record found for Student ID: ${searchId}`);
+                }
             }
         }
         
