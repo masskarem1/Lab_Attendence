@@ -106,6 +106,13 @@
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
             resultsDiv.innerHTML = '';
+
+            if (GOOGLE_SHEET_CSV_URL === 'PASTE_YOUR_NEW_GOOGLE_SHEET_CSV_URL_HERE') {
+                showError('Please update the Google Sheet URL in the HTML file.');
+                loadingDiv.classList.add('hidden');
+                return;
+            }
+
             try {
                 const response = await fetch(GOOGLE_SHEET_CSV_URL);
                 if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
@@ -197,7 +204,10 @@
             let topicCardsHtml = '';
             for(const key in topics){
                 const item = topics[key];
-                const attendanceMark = item.attendance.toUpperCase() === 'TRUE' ? '<span class="attendance-tick">✓</span>' : '<span class="attendance-cross">✗</span>';
+                const isPresent = item.attendance.toUpperCase() === 'TRUE';
+                const attendanceMark = isPresent ? '<span class="attendance-tick">✓</span>' : '<span class="attendance-cross">✗</span>';
+                // Define shadow class based on attendance
+                const shadowClass = isPresent ? 'shadow-lg shadow-green-200/60' : 'shadow-lg shadow-red-200/60';
 
                 if (item.topic === 'End of Experiments') {
                     topicCardsHtml += `
@@ -208,7 +218,7 @@
                     `;
                 } else if (item.topic === 'Revision') {
                     topicCardsHtml += `
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-semibold text-gray-800">${item.topic}</h3>
                                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span>
@@ -221,7 +231,7 @@
                     `;
                 } else {
                     topicCardsHtml += `
-                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}">
                             <div class="flex justify-between items-center mb-3">
                                 <h3 class="font-semibold text-gray-800">${item.topic}</h3>
                                 <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span>
