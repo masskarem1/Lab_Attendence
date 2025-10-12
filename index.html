@@ -23,12 +23,30 @@
         .attendance-tick {
             color: #10b981; /* green-500 */
             font-weight: bold;
-            font-size: 1.5rem; /* Made slightly larger for cards */
+            font-size: 1.5rem;
         }
          .attendance-cross {
             color: #ef4444; /* red-500 */
             font-weight: bold;
-            font-size: 1.5rem; /* Made slightly larger for cards */
+            font-size: 1.5rem;
+        }
+        /* Tab styles */
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #6b7280; /* gray-500 */
+        }
+        .tab-button.active {
+            border-bottom-color: #3b82f6; /* blue-500 */
+            color: #1f2937; /* gray-800 */
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
@@ -50,11 +68,11 @@
         <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
             <header class="text-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
-                <p class="text-gray-500 mt-2">Select a section and enter a Student ID to view attendance and marks.</p>
+                <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
             </header>
 
             <main>
-                <!-- Search Input -->
+                <!-- Search Inputs -->
                 <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
                     <div class="flex-shrink-0">
                         <label for="sectionSelector" class="sr-only">Select Section</label>
@@ -95,11 +113,27 @@
                      <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                      <p class="text-gray-500 mt-2">Fetching data...</p>
                 </div>
-
-                <!-- Results Display Area -->
-                <div id="results" class="mt-6">
-                    <!-- Student data will be dynamically inserted here -->
+                
+                <!-- Main Results Container (for tabs) -->
+                <div id="resultsContainer" class="mt-6 hidden">
+                    <!-- Tab Buttons -->
+                    <div class="border-b border-gray-200 mb-4">
+                        <nav class="-mb-px flex gap-6" aria-label="Tabs">
+                            <button id="tabAttendance" class="tab-button active">Attendance</button>
+                            <button id="tabCA" class="tab-button">C.A.</button>
+                        </nav>
+                    </div>
+                    <!-- Tab Content -->
+                    <div>
+                        <div id="attendanceContent" class="tab-content active">
+                            <!-- Attendance data will be injected here -->
+                        </div>
+                        <div id="caContent" class="tab-content">
+                             <!-- C.A. data will be injected here -->
+                        </div>
+                    </div>
                 </div>
+
                  <!-- Error Message -->
                 <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
             </main>
@@ -118,279 +152,257 @@
 
     <script>
         // --- CONFIGURATION ---
-        const GOOGLE_SHEET_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
-
-        // GIDs for each section sheet
-        const SECTION_GIDS = {
-            'All': '1650908958',
-            'A': '1620275840',
-            'B': '1661871665',
-            'C': '804746623',
-            'D': '1998860796',
-            'E': '1432194061',
-            'F': '1174976610',
-            'G': '630589668',
-            'H': '340172703',
-            'I': '1823887500',
-            'J': '1811748047',
-            'K': '289568000',
-            'L': '1058769797',
-            'M': '672465296',
-            'N': '2018867860',
-            'O': '2510390',
-            'P': '1022038284',
-            'Q': '747459593',
-            'R': '1912599889',
-            'S': '554652905',
-            'T': '1568050738'
+        // Sheet 1: Attendance (Requires Sections)
+        const GOOGLE_SHEET_1_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
+        const SECTION_GIDS_1 = {
+            'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '1568050738'
         };
+
+        // Sheet 2: Continuous Assessment (C.A.) (One Sheet For All Students)
+        const GOOGLE_SHEET_2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwOgvVGMBZkhsJY_dTFepiWNuK42nVXTg5ATU1jd0In027rMCC8Qx0o8Wcl7JHMxCNGtUXUMpVsiLv/pub?output=csv';
 
         // --- DOM ELEMENTS ---
         const studentIdInput = document.getElementById('studentIdInput');
         const searchButton = document.getElementById('searchButton');
         const sectionSelector = document.getElementById('sectionSelector');
-        const resultsDiv = document.getElementById('results');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const attendanceContent = document.getElementById('attendanceContent');
+        const caContent = document.getElementById('caContent');
+        const tabAttendance = document.getElementById('tabAttendance');
+        const tabCA = document.getElementById('tabCA');
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         
-        let studentData = [];
+        // --- FETCH & PARSE FUNCTIONS ---
+        async function fetchAttendanceData(baseUrl, gids, section) {
+            const gid = gids[section];
+            if (!gid) {
+                throw new Error(`The GID for Section ${section} is not configured.`);
+            }
+            const fetchUrl = `${baseUrl}&gid=${gid}`;
+            const response = await fetch(fetchUrl);
+            if (!response.ok) throw new Error(`Network error fetching attendance data for Section ${section}.`);
+            return await response.text();
+        }
+        
+        function parseAttendanceCSV(text) {
+            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => {
+                let cleanCell = cell.trim();
+                if (cleanCell.startsWith('"') && cleanCell.endsWith('"')) { cleanCell = cleanCell.substring(1, cleanCell.length - 1); }
+                return cleanCell;
+            }));
+            if (rows.length < 5) return [];
+            const topicRow = rows[0], dateRow = rows[1], headerRow = rows[3], dataRows = rows.slice(4);
+            const structuredHeaders = [];
+            let currentTopic = '', currentDate = '';
+            for (let i = 0; i < headerRow.length; i++) {
+                if (topicRow[i]) currentTopic = topicRow[i];
+                if (dateRow[i]) currentDate = dateRow[i];
+                let header = headerRow[i];
+                if (i === 5) { structuredHeaders.push('Section'); continue; }
+                if (header === 'Att.' || header === 'Deg.') { structuredHeaders.push(`${currentTopic}|${currentDate}|${header}`); } 
+                else { structuredHeaders.push(header); }
+            }
+            return dataRows.map(row => {
+                const student = {};
+                structuredHeaders.forEach((header, index) => { student[header] = row[index] || ''; });
+                return student;
+            }).filter(student => student['Id']);
+        }
 
-        // --- FUNCTIONS ---
-        async function fetchData(section) {
-            loadingDiv.classList.remove('hidden');
-            errorDiv.classList.add('hidden');
-            resultsDiv.innerHTML = '';
+        function parseCaCSV(text) {
+            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
+            
+            // From the screenshot, headers are on row 5 (index 4) and data starts on row 6 (index 5)
+            if (rows.length < 6) return []; 
 
-            const gid = SECTION_GIDS[section];
-            if (!gid || gid.startsWith('REPLACE_WITH')) {
-                showError(`The GID for Section ${section} is not configured.`);
-                loadingDiv.classList.add('hidden');
-                return;
+            const headers = rows[4]; 
+            const dataRows = rows.slice(5);
+
+            // Find the actual index of the ID column by looking for 'id' (case-insensitive)
+            const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
+            if (idColumnIndex === -1) {
+                console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
+                return []; 
             }
 
-            const fetchUrl = `${GOOGLE_SHEET_BASE_URL}&gid=${gid}`;
+            return dataRows.map(row => {
+                const student = {};
+                headers.forEach((header, index) => {
+                    student[header] = row[index] || '';
+                });
+                // Ensure a consistent 'Id' property exists for searching
+                student['Id'] = row[idColumnIndex] || '';
+                return student;
+            }).filter(student => student['Id'] && student['Id'].trim() !== '');
+        }
 
+        // --- CORE LOGIC ---
+        async function findAndDisplayStudent() {
+            const searchId = studentIdInput.value.trim();
+            const selectedSection = sectionSelector.value;
+            if (!searchId) { showError('Please enter a Student ID.'); return; }
+            if (!selectedSection) { showError('Please select a section.'); return; }
+            
+            loadingDiv.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            resultsContainer.classList.add('hidden');
+            
             try {
-                const response = await fetch(fetchUrl);
-                if (!response.ok) throw new Error(`Network error: ${response.statusText}`);
-                const csvText = await response.text();
-                studentData = parseComplexCSV(csvText);
+                if (GOOGLE_SHEET_2_URL.startsWith('REPLACE_WITH')) {
+                    throw new Error('The Continuous Assessment sheet URL is not configured.');
+                }
+                
+                const [attendanceCsv, caResponse] = await Promise.all([
+                    fetchAttendanceData(GOOGLE_SHEET_1_BASE_URL, SECTION_GIDS_1, selectedSection),
+                    fetch(GOOGLE_SHEET_2_URL)
+                ]);
+
+                if (!caResponse.ok) {
+                    throw new Error('Network error fetching C.A. data.');
+                }
+                const caCsv = await caResponse.text();
+
+                const attendanceData = parseAttendanceCSV(attendanceCsv);
+                const caData = parseCaCSV(caCsv);
+
+                const attendanceStudent = attendanceData.find(s => s['Id'] === searchId);
+                const caStudent = caData.find(s => s['Id'] === searchId);
+                
+                let studentFound = false;
+                // Clear previous results
+                attendanceContent.innerHTML = '';
+                caContent.innerHTML = '';
+
+                if (attendanceStudent) {
+                    displayAttendanceInfo(attendanceStudent);
+                    studentFound = true;
+                }
+                 if (caStudent) {
+                    displayCAInfo(caStudent);
+                     studentFound = true;
+                }
+
+                if (studentFound) {
+                    resultsContainer.classList.remove('hidden');
+                    // Default to attendance tab only if attendance data exists
+                    if (attendanceStudent) {
+                        switchTab('attendance');
+                    } else {
+                        switchTab('ca'); // Otherwise, show CA tab
+                    }
+                } else {
+                    showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
+                }
             } catch (error) {
-                console.error('Failed to fetch or parse data:', error);
-                showError('Could not load student data. Please check the sheet URL and your internet connection.');
+                console.error('Error during search:', error);
+                showError(error.message || 'Could not load student data. Please check configurations and connection.');
             } finally {
                 loadingDiv.classList.add('hidden');
             }
         }
         
-        function parseComplexCSV(text) {
-            const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => {
-                let cleanCell = cell.trim();
-                if (cleanCell.startsWith('"') && cleanCell.endsWith('"')) {
-                    cleanCell = cleanCell.substring(1, cleanCell.length - 1);
-                }
-                return cleanCell;
-            }));
-            if (rows.length < 5) return [];
-            const topicRow = rows[0];
-            const dateRow = rows[1];
-            const headerRow = rows[3];
-            const dataRows = rows.slice(4);
-            const structuredHeaders = [];
-            let currentTopic = '';
-            let currentDate = '';
-            for (let i = 0; i < headerRow.length; i++) {
-                if (topicRow[i]) currentTopic = topicRow[i];
-                if (dateRow[i]) currentDate = dateRow[i];
-                let header = headerRow[i];
-                if (i === 5) {
-                    structuredHeaders.push('Section');
-                    continue;
-                }
-                if (header === 'Att.' || header === 'Deg.') {
-                    structuredHeaders.push(`${currentTopic}|${currentDate}|${header}`);
-                } else {
-                    structuredHeaders.push(header);
-                }
-            }
-            return dataRows.map(row => {
-                const student = {};
-                structuredHeaders.forEach((header, index) => {
-                    student[header] = row[index] || '';
-                });
-                return student;
-            }).filter(student => student['Id']);
-        }
-
-        async function findAndDisplayStudent() {
-            const searchId = studentIdInput.value.trim();
-            const selectedSection = sectionSelector.value;
-
-            if (!searchId) {
-                resultsDiv.innerHTML = '';
-                showError('Please enter a Student ID.');
-                return;
-            }
-
-            await fetchData(selectedSection);
-
-            if (studentData.length === 0 && !errorDiv.textContent) {
-                showError('No student data was loaded. Please check the spreadsheet format and GID configuration.');
-                return;
-            };
-
-            const student = studentData.find(s => s['Id'] === searchId);
-            if (student) {
-                displayStudentInfo(student);
-            } else {
-                if (!errorDiv.textContent) {
-                    showError(`No record found for Student ID: ${searchId} in Section ${selectedSection}`);
-                }
-            }
-        }
-        
-        function displayStudentInfo(student) {
+        // --- DISPLAY FUNCTIONS ---
+        function displayAttendanceInfo(student) {
             const topics = {};
             for (const key in student) {
                 if (key.includes('|')) {
                     const [topic, date, type] = key.split('|');
                     const topicKey = `${topic}|${date}`;
-                    if (!topics[topicKey]) {
-                        topics[topicKey] = { topic, date, attendance: '', degree: '' };
-                    }
+                    if (!topics[topicKey]) { topics[topicKey] = { topic, date, attendance: '', degree: '' }; }
                     if (type === 'Att.') topics[topicKey].attendance = student[key];
                     if (type === 'Deg.') topics[topicKey].degree = student[key];
                 }
             }
-
             let topicCardsHtml = '';
             for(const key in topics){
                 const item = topics[key];
                 const isPresent = item.attendance.toUpperCase() === 'TRUE';
                 const attendanceMark = isPresent ? '<span class="attendance-tick">✓</span>' : '<span class="attendance-cross">✗</span>';
-                // Define shadow class based on attendance
                 const shadowClass = isPresent ? 'shadow-lg shadow-green-200/60' : 'shadow-lg shadow-red-200/60';
 
                 if (item.topic === 'End of Experiments') {
-                    topicCardsHtml += `
-                        <div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200 text-center col-span-1 md:col-span-2 lg:col-span-3">
-                            <h3 class="font-semibold text-blue-800">${item.topic}</h3>
-                            <p class="text-sm text-blue-600">${item.date}</p>
-                        </div>
-                    `;
+                    topicCardsHtml += `<div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200 text-center col-span-1 md:col-span-2 lg:col-span-3"><h3 class="font-semibold text-blue-800">${item.topic}</h3><p class="text-sm text-blue-600">${item.date}</p></div>`;
                 } else if (item.topic === 'Revision') {
-                    topicCardsHtml += `
-                        <div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}">
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="font-semibold text-gray-800">${item.topic}</h3>
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span>
-                            </div>
-                            <div class="text-center border-t pt-3 mt-3">
-                                <p class="text-sm text-gray-500 mb-1">Attendance</p>
-                                ${attendanceMark}
-                            </div>
-                        </div>
-                    `;
+                    topicCardsHtml += `<div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}"><div class="flex justify-between items-center mb-3"><h3 class="font-semibold text-gray-800">${item.topic}</h3><span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span></div><div class="text-center border-t pt-3 mt-3"><p class="text-sm text-gray-500 mb-1">Attendance</p>${attendanceMark}</div></div>`;
                 } else {
-                    topicCardsHtml += `
-                        <div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}">
-                            <div class="flex justify-between items-center mb-3">
-                                <h3 class="font-semibold text-gray-800">${item.topic}</h3>
-                                <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span>
-                            </div>
-                            <div class="flex justify-around border-t pt-3 mt-3">
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-500 mb-1">Attendance</p>
-                                    ${attendanceMark}
-                                </div>
-                                <div class="text-center">
-                                    <p class="text-sm text-gray-500 mb-1">Degree</p>
-                                    <p class="font-bold text-xl text-gray-700">${item.degree || '—'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    topicCardsHtml += `<div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}"><div class="flex justify-between items-center mb-3"><h3 class="font-semibold text-gray-800">${item.topic}</h3><span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span></div><div class="flex justify-around border-t pt-3 mt-3"><div class="text-center"><p class="text-sm text-gray-500 mb-1">Attendance</p>${attendanceMark}</div><div class="text-center"><p class="text-sm text-gray-500 mb-1">Degree</p><p class="font-bold text-xl text-gray-700">${item.degree || '—'}</p></div></div></div>`;
                 }
             }
-            
             const totalScore = parseFloat(student['Total']);
             const maxScore = 10;
-            let circularProgressBarHtml = '';
-            let scoreColorClass = 'text-gray-700';
-            let progressBarColorClass = 'text-gray-400';
-
-            if (!isNaN(totalScore)) {
-                if (totalScore >= 9) { scoreColorClass = 'text-green-600'; progressBarColorClass = 'text-green-600'; } 
-                else if (totalScore >= 7) { scoreColorClass = 'text-lime-500'; progressBarColorClass = 'text-lime-500'; } 
-                else if (totalScore >= 5) { scoreColorClass = 'text-yellow-400'; progressBarColorClass = 'text-yellow-400'; } 
-                else if (totalScore >= 3) { scoreColorClass = 'text-orange-500'; progressBarColorClass = 'text-orange-500'; } 
-                else { scoreColorClass = 'text-red-600'; progressBarColorClass = 'text-red-600'; }
-                
-                const progressPercentage = Math.min((totalScore / maxScore) * 100, 100);
-                const radius = 40;
-                const circumference = 2 * Math.PI * radius;
-                const offset = circumference - (progressPercentage / 100) * circumference;
-
-                circularProgressBarHtml = `
-                    <div class="relative w-32 h-32 mt-2">
-                        <svg class="w-full h-full" viewBox="0 0 100 100">
-                            <!-- Background circle -->
-                            <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/>
-                            <!-- Progress circle -->
-                            <circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"
-                                    style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
-                        </svg>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center">
-                            <span class="text-3xl font-bold ${scoreColorClass}">${student['Total'] || 'N/A'}</span>
-                            <span class="text-sm text-gray-500">/ ${maxScore}</span>
-                        </div>
-                    </div>
-                `;
-            } else {
-                 circularProgressBarHtml = `
-                    <div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center">
-                         <span class="text-3xl font-bold text-gray-700">${student['Total'] || 'N/A'}</span>
-                    </div>
-                `;
-            }
-
-            const resultCard = `
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                    <div class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 text-center md:text-left">
-                        <div class="mb-4 md:mb-0">
-                            <h2 class="text-2xl font-bold text-gray-800">${student['Name']}</h2>
-                            <p class="text-gray-500">Student ID: ${student['Id']}</p>
-                            <p class="text-gray-500 mt-1">Section: ${student['Section'] || 'N/A'}</p>
-                        </div>
-                        <div class="w-full md:w-1/3 flex flex-col items-center">
-                            <p class="text-sm font-medium text-gray-500">Total Score</p>
-                            ${circularProgressBarHtml}
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        ${topicCardsHtml}
-                    </div>
-                </div>
-            `;
-            resultsDiv.innerHTML = resultCard;
+            const progressHtml = createCircularProgressBar(totalScore, maxScore, student['Total']);
+            const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in"><div class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 text-center md:text-left"><div class="mb-4 md:mb-0"><h2 class="text-2xl font-bold text-gray-800">${student['Name']}</h2><p class="text-gray-500">Student ID: ${student['Id']}</p><p class="text-gray-500 mt-1">Section: ${student['Section'] || 'N/A'}</p></div><div class="w-full md:w-1/3 flex flex-col items-center"><p class="text-sm font-medium text-gray-500">Practical Score</p>${progressHtml}</div></div><h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div></div>`;
+            attendanceContent.innerHTML = resultCard;
         }
 
+        function displayCAInfo(student) {
+            const totalScoreHtml = `<p class="text-4xl font-bold text-indigo-600">${student['Total'] || 'N/A'} / 70</p>`;
+            const rankHtml = `<p class="text-lg font-semibold text-gray-600">Rank: <span class="text-2xl text-amber-500">${student['Rank'] || 'N/A'}</span></p>`;
+            
+            const cards = [
+                { title: 'Quiz 1', score: student['Q1/10'], max: 10 },
+                { title: 'Quiz 2', score: student['Q2/15'], max: 15 },
+                { title: 'Quiz 3', score: student['Q3/15'], max: 15 },
+                { title: 'Oral', score: student['Oral'], max: 10 },
+                { title: 'Practical', score: student['pra'], max: 20 }
+            ];
+
+            let markCardsHtml = cards.map(card => {
+                return `<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">${createCircularProgressBar(card.score, card.max, card.score, card.title)}</div>`
+            }).join('');
+            
+            caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in"><div class="text-center mb-6"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex items-center justify-center gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div><h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Assessment Details</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">${markCardsHtml}</div></div>`;
+        }
+
+        function createCircularProgressBar(score, maxScore, displayText, title = '') {
+            const scoreNum = parseFloat(score);
+            let scoreColorClass = 'text-gray-700', progressBarColorClass = 'text-gray-400';
+            if (!isNaN(scoreNum)) {
+                const percentage = (scoreNum / maxScore) * 100;
+                if (percentage >= 90) { scoreColorClass = 'text-green-600'; progressBarColorClass = 'text-green-600'; } 
+                else if (percentage >= 70) { scoreColorClass = 'text-lime-500'; progressBarColorClass = 'text-lime-500'; } 
+                else if (percentage >= 50) { scoreColorClass = 'text-yellow-400'; progressBarColorClass = 'text-yellow-400'; } 
+                else if (percentage >= 30) { scoreColorClass = 'text-orange-500'; progressBarColorClass = 'text-orange-500'; } 
+                else { scoreColorClass = 'text-red-600'; progressBarColorClass = 'text-red-600'; }
+                const radius = 40;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
+                const titleHtml = title ? `<p class="text-sm font-semibold text-gray-600 -mt-1">${title}</p>` : '';
+
+                return `<div class="relative w-32 h-32 mt-2"><svg class="w-full h-full" viewBox="0 0 100 100"><circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/><circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" /></svg><div class="absolute inset-0 flex flex-col items-center justify-center">${titleHtml}<span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span><span class="text-sm text-gray-500">/ ${maxScore}</span></div></div>`;
+            }
+            return `<div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center"><p class="text-sm font-semibold text-gray-600 -mt-1">${title}</p><span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span></div>`;
+        }
+
+        // --- UTILITY FUNCTIONS ---
         function showError(message) {
             errorDiv.textContent = message;
             errorDiv.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
+        }
+
+        function switchTab(tabName) {
+            if (tabName === 'attendance') {
+                tabAttendance.classList.add('active');
+                tabCA.classList.remove('active');
+                attendanceContent.classList.add('active');
+                caContent.classList.remove('active');
+            } else {
+                tabAttendance.classList.remove('active');
+                tabCA.classList.add('active');
+                attendanceContent.classList.remove('active');
+                caContent.classList.add('active');
+            }
         }
 
         // --- EVENT LISTENERS ---
         searchButton.addEventListener('click', findAndDisplayStudent);
-        studentIdInput.addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') findAndDisplayStudent();
-        });
+        studentIdInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') findAndDisplayStudent(); });
+        tabAttendance.addEventListener('click', () => switchTab('attendance'));
+        tabCA.addEventListener('click', () => switchTab('ca'));
 
     </script>
 </body>
 </html>
-
-
-
 
