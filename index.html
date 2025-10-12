@@ -33,20 +33,60 @@
         /* Tab styles */
         .tab-button {
             padding: 0.75rem 1.5rem;
-            border-bottom: 3px solid transparent;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-bottom: 0;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            background-color: #f3f4f6; /* gray-100 */
             transition: all 0.3s ease;
             font-weight: 600;
             color: #6b7280; /* gray-500 */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(2px);
         }
         .tab-button.active {
-            border-bottom-color: #3b82f6; /* blue-500 */
+            background-color: #f9fafb; /* gray-50 */
             color: #1f2937; /* gray-800 */
+            border-color: #e5e7eb; /* gray-200 */
+            transform: translateY(0);
+            position: relative;
+            top: 1px;
+            z-index: 10;
         }
         .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
+        }
+        /* Card hover effect */
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        /* Pendulum Animation */
+        @keyframes swing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(20deg); }
+            75% { transform: rotate(-20deg); }
+        }
+        .pendulum-icon {
+            transform-origin: top center;
+            animation: swing 2.5s ease-in-out infinite;
+        }
+        /* Writing Animation */
+        @keyframes writing {
+            0%, 100% { transform: rotate(-5deg) translateX(0px); }
+            50% { transform: rotate(5deg) translateX(2px); }
+        }
+        .writing-pen {
+            transform-origin: 16px 14px;
+            animation: writing 2s ease-in-out infinite;
         }
     </style>
 </head>
@@ -60,7 +100,7 @@
             </div>
             <div class="ml-6 flex-grow">
                 <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
-                <p class="text-sm md:text-base" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
+                <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
             </div>
         </div>
 
@@ -119,8 +159,35 @@
                     <!-- Tab Buttons -->
                     <div class="border-b border-gray-200 mb-4">
                         <nav class="-mb-px flex gap-6" aria-label="Tabs">
-                            <button id="tabAttendance" class="tab-button active">Attendance</button>
-                            <button id="tabCA" class="tab-button">C.A.</button>
+                            <button id="tabAttendance" class="tab-button active">
+                                <svg class="h-5 w-5 pendulum-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <radialGradient id="grad1" cx="0.3" cy="0.3" r="1">
+                                            <stop offset="0%" stop-color="#e2e8f0"/>
+                                            <stop offset="100%" stop-color="#4a5568"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <path d="M6 3H18" stroke="#718096" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M12 3V15" stroke="#a0aec0" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="12" cy="19" r="4" fill="url(#grad1)" stroke="#4a5568" stroke-width="0.5"/>
+                                </svg>
+                                Physics Lab
+                            </button>
+                            <button id="tabCA" class="tab-button">
+                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <!-- Paper -->
+                                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" fill="#FBBF24" />
+                                        <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="#D1D5DB"/>
+                                        <path d="m9 16.01.01-.011M9 12h.01M13 12h3m-3 4h3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <!-- Animated Pen -->
+                                        <g class="writing-pen">
+                                            <path d="M18.828 4.172a2.121 2.121 0 0 0-3 0L7.5 12.5V15h2.5l8.328-8.328a2.121 2.121 0 0 0 0-3z" fill="#3B82F6"/>
+                                        </g>
+                                    </g>
+                                </svg>
+                                Assessments
+                            </button>
                         </nav>
                     </div>
                     <!-- Tab Content -->
@@ -212,26 +279,19 @@
 
         function parseCaCSV(text) {
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
-            
-            // From the screenshot, headers are on row 5 (index 4) and data starts on row 6 (index 5)
             if (rows.length < 6) return []; 
-
             const headers = rows[4]; 
             const dataRows = rows.slice(5);
-
-            // Find the actual index of the ID column by looking for 'id' (case-insensitive)
             const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
             if (idColumnIndex === -1) {
                 console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
                 return []; 
             }
-
             return dataRows.map(row => {
                 const student = {};
                 headers.forEach((header, index) => {
                     student[header] = row[index] || '';
                 });
-                // Ensure a consistent 'Id' property exists for searching
                 student['Id'] = row[idColumnIndex] || '';
                 return student;
             }).filter(student => student['Id'] && student['Id'].trim() !== '');
@@ -270,7 +330,6 @@
                 const caStudent = caData.find(s => s['Id'] === searchId);
                 
                 let studentFound = false;
-                // Clear previous results
                 attendanceContent.innerHTML = '';
                 caContent.innerHTML = '';
 
@@ -285,11 +344,10 @@
 
                 if (studentFound) {
                     resultsContainer.classList.remove('hidden');
-                    // Default to attendance tab only if attendance data exists
                     if (attendanceStudent) {
                         switchTab('attendance');
                     } else {
-                        switchTab('ca'); // Otherwise, show CA tab
+                        switchTab('ca');
                     }
                 } else {
                     showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
@@ -338,18 +396,18 @@
 
         function displayCAInfo(student) {
             const totalScoreHtml = `<p class="text-4xl font-bold text-indigo-600">${student['Total'] || 'N/A'} / 70</p>`;
-            const rankHtml = `<p class="text-lg font-semibold text-gray-600">Rank: <span class="text-2xl text-amber-500">${student['Rank'] || 'N/A'}</span></p>`;
+            const rankHtml = `<p class="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Rank: <span class="text-2xl text-amber-500">${student['Rank'] || 'N/A'}</span></p>`;
             
             const cards = [
-                { title: 'Quiz 1', score: student['Q1/10'], max: 10 },
-                { title: 'Quiz 2', score: student['Q2/15'], max: 15 },
-                { title: 'Quiz 3', score: student['Q3/15'], max: 15 },
-                { title: 'Oral', score: student['Oral'], max: 10 },
-                { title: 'Practical', score: student['pra'], max: 20 }
+                { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
+                { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
+                { title: 'Quiz 3', score: student['Q3/15'], max: 15, type: 'Quiz' },
+                { title: 'Oral', score: student['Oral'], max: 10, type: 'Oral' },
+                { title: 'Practical', score: student['pra'], max: 20, type: 'Practical' }
             ];
 
             let markCardsHtml = cards.map(card => {
-                return `<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">${createCircularProgressBar(card.score, card.max, card.score, card.title)}</div>`
+                return `<div class="bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">${createCircularProgressBar(card.score, card.max, card.score, card.title)}</div>`
             }).join('');
             
             caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in"><div class="text-center mb-6"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex items-center justify-center gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div><h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Assessment Details</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">${markCardsHtml}</div></div>`;
@@ -368,11 +426,11 @@
                 const radius = 40;
                 const circumference = 2 * Math.PI * radius;
                 const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
-                const titleHtml = title ? `<p class="text-sm font-semibold text-gray-600 -mt-1">${title}</p>` : '';
+                const titleHtml = title ? `<p class="text-base font-bold text-gray-700 -mt-1">${title}</p>` : '';
 
                 return `<div class="relative w-32 h-32 mt-2"><svg class="w-full h-full" viewBox="0 0 100 100"><circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/><circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" /></svg><div class="absolute inset-0 flex flex-col items-center justify-center">${titleHtml}<span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span><span class="text-sm text-gray-500">/ ${maxScore}</span></div></div>`;
             }
-            return `<div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center"><p class="text-sm font-semibold text-gray-600 -mt-1">${title}</p><span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span></div>`;
+            return `<div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center"><p class="text-base font-bold text-gray-700 -mt-1">${title}</p><span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span></div>`;
         }
 
         // --- UTILITY FUNCTIONS ---
@@ -405,4 +463,9 @@
     </script>
 </body>
 </html>
+
+
+
+
+
 
