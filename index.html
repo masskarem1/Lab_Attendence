@@ -207,17 +207,37 @@
         </div>
     </div>
     
-    <!-- Outlook Modal -->
-    <div id="outlookModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
+    <!-- ZipGrade Modal -->
+    <div id="zipgradeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center fade-in">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Check Your Outlook Email</h2>
-            <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <p class="text-gray-600 my-6">Your <strong>Student Access Code</strong> for ZipGrade has been sent to your official university Outlook email address.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">ZipGrade Login Info</h2>
+            <p class="text-gray-500 mb-6">Use these details to log in on the ZipGrade website.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-left text-sm font-medium text-gray-500">ZipGrade Student ID</label>
+                    <div class="relative mt-1">
+                        <input type="text" id="modalStudentId" readonly class="w-full bg-gray-100 border border-gray-300 rounded-md px-3 py-2 text-lg">
+                        <button onclick="copyToClipboard('modalStudentId', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-blue-500">
+                            <span class="copy-text">Copy</span>
+                            <svg class="h-6 w-6 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-left text-sm font-medium text-gray-500">Student Access Code</label>
+                    <div class="relative mt-1">
+                        <input type="text" id="modalAccessCode" readonly class="w-full bg-gray-100 border border-gray-300 rounded-md px-3 py-2 text-lg">
+                         <button onclick="copyToClipboard('modalAccessCode', this)" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-blue-500">
+                            <span class="copy-text">Copy</span>
+                            <svg class="h-6 w-6 copy-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
             
-            <a href="https://outlook.live.com/" target="_blank" class="mt-6 inline-block w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
-                Open Outlook
+            <a href="https://zipgrade.com/s/" target="_blank" class="mt-6 inline-block w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-colors">
+                Go to ZipGrade
             </a>
 
             <button id="closeModalButton" class="mt-4 text-sm text-gray-500 hover:text-gray-700">Close</button>
@@ -301,6 +321,7 @@
             const dataRows = rows.slice(5);
 
             const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
+            const accessCodeColumnIndex = headers.findIndex(h => h.toLowerCase().includes('access code'));
             
             if (idColumnIndex === -1) {
                 console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
@@ -312,6 +333,7 @@
                     student[header] = row[index] || '';
                 });
                 student['Id'] = row[idColumnIndex] || '';
+                student['StudentAccessCode'] = accessCodeColumnIndex !== -1 ? row[accessCodeColumnIndex] || '' : '';
                 return student;
             }).filter(student => student['Id'] && student['Id'].trim() !== '');
         }
@@ -427,10 +449,13 @@
 
             let markCardsHtml = cards.map(card => {
                 const isQuiz = card.type === 'Quiz';
+                const studentAccessCode = student['StudentAccessCode'];
+                const hasAccessInfo = isQuiz && studentAccessCode && studentAccessCode.trim() !== '';
                 
-                const cardClasses = `bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${isQuiz ? 'cursor-pointer quiz-card' : ''}`;
+                const cardClasses = `bg-gradient-to-br from-white to-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${hasAccessInfo ? 'cursor-pointer quiz-card' : ''}`;
+                const dataAttributes = hasAccessInfo ? `data-id="${student['Id']}" data-code="${studentAccessCode}"` : '';
 
-                return `<div class="${cardClasses}">
+                return `<div class="${cardClasses}" ${dataAttributes}>
                             ${createCircularProgressBar(card.score, card.max, card.score, card.title)}
                         </div>`;
             }).join('');
@@ -459,15 +484,36 @@
         }
 
         // --- UTILITY & MODAL FUNCTIONS ---
-        const outlookModal = document.getElementById('outlookModal');
+        const zipgradeModal = document.getElementById('zipgradeModal');
         const closeModalButton = document.getElementById('closeModalButton');
+        const modalStudentId = document.getElementById('modalStudentId');
+        const modalAccessCode = document.getElementById('modalAccessCode');
 
-        function showOutlookModal() {
-            outlookModal.classList.remove('hidden');
+        function showZipgradeModal(studentId, accessCode) {
+            modalStudentId.value = studentId;
+            modalAccessCode.value = accessCode;
+            zipgradeModal.classList.remove('hidden');
         }
 
-        function hideOutlookModal() {
-            outlookModal.classList.add('hidden');
+        function hideZipgradeModal() {
+            zipgradeModal.classList.add('hidden');
+        }
+
+        window.copyToClipboard = function(elementId, buttonElement) {
+            const input = document.getElementById(elementId);
+            input.select();
+            input.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                const copyText = buttonElement.querySelector('.copy-text');
+                if(copyText) {
+                    copyText.textContent = 'Copied!';
+                    setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                }
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+            }
+            window.getSelection().removeAllRanges(); // Deselect
         }
 
         function showError(message) {
@@ -495,17 +541,18 @@
         studentIdInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') findAndDisplayStudent(); });
         tabAttendance.addEventListener('click', () => switchTab('attendance'));
         tabCA.addEventListener('click', () => switchTab('ca'));
-        closeModalButton.addEventListener('click', hideOutlookModal);
-        outlookModal.addEventListener('click', (event) => { if (event.target === outlookModal) hideOutlookModal(); });
+        closeModalButton.addEventListener('click', hideZipgradeModal);
+        zipgradeModal.addEventListener('click', (event) => { if (event.target === zipgradeModal) hideZipgradeModal(); });
 
         caContent.addEventListener('click', (event) => {
             const card = event.target.closest('.quiz-card');
             if (card) {
-                showOutlookModal();
+                const studentId = card.dataset.id;
+                const accessCode = card.dataset.code;
+                showZipgradeModal(studentId, accessCode);
             }
         });
 
     </script>
 </body>
 </html>
-
