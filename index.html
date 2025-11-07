@@ -154,49 +154,57 @@
                      <p class="text-gray-500 mt-2">Fetching data...</p>
                 </div>
                 
-                <!-- Main Results Container (for tabs) -->
-                <div id="resultsContainer" class="mt-6 hidden">
-                    <!-- Tab Buttons -->
-                    <div class="border-b border-gray-200 mb-4">
-                        <nav class="-mb-px flex flex-wrap justify-center gap-4 sm:gap-6" aria-label="Tabs">
-                            <button id="tabAttendance" class="tab-button active">
-                                <svg class="h-5 w-5 pendulum-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <defs>
-                                        <radialGradient id="grad1" cx="0.3" cy="0.3" r="1">
-                                            <stop offset="0%" stop-color="#e2e8f0"/>
-                                            <stop offset="100%" stop-color="#4a5568"/>
-                                        </radialGradient>
-                                    </defs>
-                                    <path d="M6 3H18" stroke="#718096" stroke-width="2" stroke-linecap="round"/>
-                                    <path d="M12 3V15" stroke="#a0aec0" stroke-width="2" stroke-linecap="round"/>
-                                    <circle cx="12" cy="19" r="4" fill="url(#grad1)" stroke="#4a5568" stroke-width="0.5"/>
-                                </svg>
-                                Physics Lab
-                            </button>
-                            <button id="tabCA" class="tab-button">
-                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g>
-                                        <!-- Paper -->
-                                        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" fill="#FBBF24" />
-                                        <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="#D1D5DB"/>
-                                        <path d="m9 16.01.01-.011M9 12h.01M13 12h3m-3 4h3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <!-- Animated Pen -->
-                                        <g class="writing-pen">
-                                            <path d="M18.828 4.172a2.121 2.121 0 0 0-3 0L7.5 12.5V15h2.5l8.328-8.328a2.121 2.121 0 0 0 0-3z" fill="#3B82F6"/>
-                                        </g>
-                                    </g>
-                                </svg>
-                                Assessments
-                            </button>
-                        </nav>
+                <!-- Main Results Container -->
+                <div id="resultsContainer" class="hidden">
+                    <!-- Main Board -->
+                    <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
+                        <!-- Content will be injected by JS -->
                     </div>
-                    <!-- Tab Content -->
-                    <div>
-                        <div id="attendanceContent" class="tab-content active">
-                            <!-- Attendance data will be injected here -->
+
+                    <!-- Tabs Container -->
+                    <div id="tabsContainer" class="mt-6">
+                        <!-- Tab Buttons -->
+                        <div class="border-b border-gray-200 mb-4">
+                            <nav class="-mb-px flex flex-wrap justify-center gap-4 sm:gap-6" aria-label="Tabs">
+                                <button id="tabAttendance" class="tab-button">
+                                    <svg class="h-5 w-5 pendulum-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <radialGradient id="grad1" cx="0.3" cy="0.3" r="1">
+                                                <stop offset="0%" stop-color="#e2e8f0"/>
+                                                <stop offset="100%" stop-color="#4a5568"/>
+                                            </radialGradient>
+                                        </defs>
+                                        <path d="M6 3H18" stroke="#718096" stroke-width="2" stroke-linecap="round"/>
+                                        <path d="M12 3V15" stroke="#a0aec0" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="12" cy="19" r="4" fill="url(#grad1)" stroke="#4a5568" stroke-width="0.5"/>
+                                    </svg>
+                                    Physics Lab
+                                </button>
+                                <button id="tabCA" class="tab-button">
+                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <!-- Paper -->
+                                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" fill="#FBBF24" />
+                                            <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="#D1D5DB"/>
+                                            <path d="m9 16.01.01-.011M9 12h.01M13 12h3m-3 4h3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <!-- Animated Pen -->
+                                            <g class="writing-pen">
+                                                <path d="M18.828 4.172a2.121 2.121 0 0 0-3 0L7.5 12.5V15h2.5l8.328-8.328a2.121 2.121 0 0 0 0-3z" fill="#3B82F6"/>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    Assessments
+                                </button>
+                            </nav>
                         </div>
-                        <div id="caContent" class="tab-content">
-                             <!-- C.A. data will be injected here -->
+                        <!-- Tab Content -->
+                        <div>
+                            <div id="attendanceContent" class="tab-content">
+                                <!-- Attendance data will be injected here -->
+                            </div>
+                            <div id="caContent" class="tab-content">
+                                 <!-- C.A. data will be injected here -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -270,6 +278,7 @@
         const searchButton = document.getElementById('searchButton');
         const sectionSelector = document.getElementById('sectionSelector');
         const resultsContainer = document.getElementById('resultsContainer');
+        const mainBoard = document.getElementById('mainBoard'); // New Main Board
         const attendanceContent = document.getElementById('attendanceContent');
         const caContent = document.getElementById('caContent');
         const tabAttendance = document.getElementById('tabAttendance');
@@ -349,7 +358,8 @@
             
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
-            resultsContainer.classList.add('hidden');
+            resultsContainer.classList.add('hidden'); // Hide main container
+            mainBoard.classList.add('hidden');
             
             try {
                 if (GOOGLE_SHEET_2_URL.startsWith('REPLACE_WITH')) {
@@ -375,23 +385,34 @@
                 let studentFound = false;
                 attendanceContent.innerHTML = '';
                 caContent.innerHTML = '';
+                mainBoard.innerHTML = '';
 
-                if (attendanceStudent) {
+                if (attendanceStudent && caStudent) {
+                    // Both found, display everything
+                    displayMainBoard(attendanceStudent, caStudent);
                     displayAttendanceInfo(attendanceStudent);
+                    displayCAInfo(caStudent); 
+                    studentFound = true;
+                } else if (attendanceStudent) {
+                    // Only found in attendance
+                    displayMainBoard(attendanceStudent, null); // Show partial main board
+                    displayAttendanceInfo(attendanceStudent);
+                    caContent.innerHTML = '<p class="text-center text-gray-500">No assessment data found for this student.</p>';
+                    studentFound = true;
+                } else if (caStudent) {
+                     // Only found in C.A.
+                    displayMainBoard(null, caStudent); // Show partial main board
+                    displayCAInfo(caStudent); 
+                    attendanceContent.innerHTML = '<p class="text-center text-gray-500">No lab data found for this student.</p>';
                     studentFound = true;
                 }
-                 if (caStudent) {
-                    displayCAInfo(caStudent);
-                     studentFound = true;
-                }
+
 
                 if (studentFound) {
                     resultsContainer.classList.remove('hidden');
-                    if (attendanceStudent) {
-                        switchTab('attendance');
-                    } else {
-                        switchTab('ca');
-                    }
+                    mainBoard.classList.remove('hidden');
+                    // Reset tabs to inactive state
+                    switchTab(null);
                 } else {
                     showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
                 }
@@ -404,6 +425,56 @@
         }
         
         // --- DISPLAY FUNCTIONS ---
+
+        function displayMainBoard(attendanceStudent, caStudent) {
+            // Get Info (prioritize attendance sheet for name)
+            const studentName = attendanceStudent ? attendanceStudent['Name'] : (caStudent ? caStudent['Name'] : 'N/A');
+            const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
+            const studentSection = attendanceStudent ? attendanceStudent['Section'] : 'N/A';
+
+            // Get Grades
+            const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
+            const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
+            const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
+            const quizTotal = quiz1 + quiz2 + quiz3;
+            const oralScore = caStudent ? caStudent['Oral'] : 'N/A';
+            const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
+            const totalScore = caStudent ? caStudent['Total'] : 'N/A';
+            const rank = caStudent ? caStudent['Rank'] : 'N/A';
+
+            // Create Progress Circles
+            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : '';
+            const oralCircle = caStudent ? createCircularProgressBar(oralScore, 10, oralScore, 'Oral') : '';
+            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : '';
+            
+            // Total Score & Rank HTML
+            const totalScoreHtml = caStudent ? `<p class="text-4xl font-bold text-indigo-600">${totalScore} / 70</p>` : '';
+            const rankHtml = caStudent ? `<p class="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Rank: <span class="text-2xl text-amber-500">${rank}</span></p>` : '';
+
+
+            const mainBoardHtml = `
+                <div class="mb-4 text-center md:text-left">
+                    <h2 class="text-2xl font-bold text-gray-800">${studentName}</h2>
+                    <p class="text-gray-500">Student ID: ${studentId}</p>
+                    <p class="text-gray-500 mt-1">Section: ${studentSection || 'N/A'}</p>
+                </div>
+                <div class="text-center mb-6 pt-6 border-t"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div>
+                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t text-center">Main Grades</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${quizCircle || '<p>N/A</p>'}
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${oralCircle || '<p>N/A</p>'}
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${practicalCircle || '<p>N/A</p>'}
+                    </div>
+                </div>
+            `;
+            mainBoard.innerHTML = mainBoardHtml;
+        }
+
         function displayAttendanceInfo(student) {
             const topics = {};
             for (const key in student) {
@@ -431,24 +502,34 @@
                     topicCardsHtml += `<div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}"><div class="flex justify-between items-center mb-3"><h3 class="font-semibold text-gray-800">${item.topic}</h3><span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span></div><div class="flex justify-around border-t pt-3 mt-3"><div class="text-center"><p class="text-sm text-gray-500 mb-1">Attendance</p>${attendanceMark}</div><div class="text-center"><p class="text-sm text-gray-500 mb-1">Degree</p><p class="font-bold text-xl text-gray-700">${item.degree || '—'}</p></div></div></div>`;
                 }
             }
+            
             const totalScore = parseFloat(student['Total']);
             const maxScore = 10;
             const progressHtml = createCircularProgressBar(totalScore, maxScore, student['Total']);
             
-            const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in"><div class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 text-center md:text-left"><div class="mb-4 md:mb-0"><h2 class="text-2xl font-bold text-gray-800">${student['Name']}</h2><p class="text-gray-500">Student ID: ${student['Id']}</p><p class="text-gray-500 mt-1">Section: ${student['Section'] || 'N/A'}</p></div><div class="w-full md:w-1/3 flex flex-col items-center"><p class="text-sm font-medium text-gray-500">Practical Score</p>${progressHtml}</div></div><h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div></div>`;
+            const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <div class="w-full flex flex-col items-center mb-6">
+                    <p class="text-sm font-medium text-gray-500">Lab Score</p>
+                    ${progressHtml}
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
+            </div>`;
             attendanceContent.innerHTML = resultCard;
         }
 
         function displayCAInfo(student) {
-            const totalScoreHtml = `<p class="text-4xl font-bold text-indigo-600">${student['Total'] || 'N/A'} / 70</p>`;
-            const rankHtml = `<p class="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Rank: <span class="text-2xl text-amber-500">${student['Rank'] || 'N/A'}</span></p>`;
+            const quiz1 = parseFloat(student['Q1/10'] || 0);
+            const quiz2 = parseFloat(student['Q2/15'] || 0);
+            const quiz3 = parseFloat(student['Q3/15'] || 0);
+            const quizTotal = quiz1 + quiz2 + quiz3;
             
+            const quizTotalCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
+
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
                 { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
-                { title: 'Quiz 3', score: student['Q3/15'], max: 15, type: 'Quiz' },
-                { title: 'Oral', score: student['Oral'], max: 10, type: 'Oral' },
-                { title: 'Practical', score: student['pra'], max: 20, type: 'Practical' }
+                { title: 'Quiz 3', score: student['Q3/15'], max: 15, type: 'Quiz' }
             ];
 
             let markCardsHtml = cards.map(card => {
@@ -464,7 +545,16 @@
                         </div>`;
             }).join('');
             
-            caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in"><div class="text-center mb-6"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div><h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Assessment Details</h3><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">${markCardsHtml}</div></div>`;
+            caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-700">Quiz Summary</h3>
+                    <div class="w-full flex flex-col items-center mt-2">
+                         ${quizTotalCircle}
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Quiz Details</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
+            </div>`;
         }
 
         function createCircularProgressBar(score, maxScore, displayText, title = '') {
@@ -537,11 +627,17 @@
                 tabCA.classList.remove('active');
                 attendanceContent.classList.add('active');
                 caContent.classList.remove('active');
-            } else {
+            } else if (tabName === 'ca') {
                 tabAttendance.classList.remove('active');
                 tabCA.classList.add('active');
                 attendanceContent.classList.remove('active');
                 caContent.classList.add('active');
+            } else {
+                // Inactive state
+                tabAttendance.classList.remove('active');
+                tabCA.classList.remove('active');
+                attendanceContent.classList.remove('active');
+                caContent.classList.remove('active');
             }
         }
 
