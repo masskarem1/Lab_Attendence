@@ -30,7 +30,6 @@
             font-weight: bold;
             font-size: 1.5rem;
         }
-        /* Tab styles removed */
         .tab-content {
             display: none;
         }
@@ -67,92 +66,105 @@
 </head>
 <body class="bg-gray-100">
 
-    <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
-        <!-- Header -->
-        <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
-            <div class="flex-shrink-0">
-                <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
-            </div>
-            <div class="ml-6 flex-grow">
-                <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
-                <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
-            </div>
-        </div>
-
-        <!-- Main Content Card -->
-        <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
-            <header class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
-                <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
-            </header>
-
-            <main>
-                <!-- Search Inputs -->
-                <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
-                    <div class="flex-shrink-0">
-                        <label for="sectionSelector" class="sr-only">Select Section</label>
-                        <select id="sectionSelector" class="w-full sm:w-auto h-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                            <option value="All">All Sections</option>
-                            <option value="A">Section A</option>
-                            <option value="B">Section B</option>
-                            <option value="C">Section C</option>
-                            <option value="D">Section D</option>
-                            <option value="E">Section E</option>
-                            <option value="F">Section F</option>
-                            <option value="G">Section G</option>
-                            <option value="H">Section H</option>
-                            <option value="I">Section I</option>
-                            <option value="J">Section J</option>
-                            <option value="K">Section K</option>
-                            <option value="L">Section L</option>
-                            <option value="M">Section M</option>
-                            <option value="N">Section N</option>
-                            <option value="O">Section O</option>
-                            <option value="P">Section P</option>
-                            <option value="Q">Section Q</option>
-                            <option value="R">Section R</option>
-                            <option value="S">Section S</option>
-                            <option value="T">Section T</option>
-                        </select>
-                    </div>
-                    <div class="relative flex-grow">
-                        <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                        <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
-                            Search
-                        </button>
-                    </div>
+    <!-- This container holds the main page view (header, search, main board) -->
+    <div id="mainViewContainer">
+        <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
+            <!-- Header -->
+            <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
+                <div class="flex-shrink-0">
+                    <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
                 </div>
-
-                <!-- Loading Spinner -->
-                <div id="loading" class="text-center mt-6 hidden">
-                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                     <p class="text-gray-500 mt-2">Fetching data...</p>
+                <div class="ml-6 flex-grow">
+                    <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
+                    <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
                 </div>
-                
-                <!-- Main Results Container -->
-                <div id="resultsContainer" class="hidden">
-                    <!-- Main Board -->
-                    <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
-                        <!-- Content will be injected by JS -->
-                    </div>
+            </div>
 
-                    <!-- Details Container (replaces tabs) -->
-                    <div id="detailsContainer" class="mt-6">
-                        <!-- Tab Content (now just detail blocks) -->
-                        <div>
-                            <div id="attendanceContent" class="tab-content">
-                                <!-- Attendance data will be injected here -->
-                            </div>
-                            <div id="caContent" class="tab-content">
-                                 <!-- C.A. data will be injected here -->
-                            </div>
+            <!-- Main Content Card -->
+            <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
+                <header class="text-center mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
+                    <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
+                </header>
+
+                <main>
+                    <!-- Search Inputs -->
+                    <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
+                        <div class="flex-shrink-0">
+                            <label for="sectionSelector" class="sr-only">Select Section</label>
+                            <select id="sectionSelector" class="w-full sm:w-auto h-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                                <option value="All">All Sections</option>
+                                <option value="A">Section A</option>
+                                <option value="B">Section B</option>
+                                <option value="C">Section C</option>
+                                <option value="D">Section D</option>
+                                <option value="E">Section E</option>
+                                <option value="F">Section F</option>
+                                <option value="G">Section G</option>
+                                <option value="H">Section H</option>
+                                <option value="I">Section I</option>
+                                <option value="J">Section J</option>
+                                <option value="K">Section K</option>
+                                <option value="L">Section L</option>
+                                <option value="M">Section M</option>
+                                <option value="N">Section N</option>
+                                <option value="O">Section O</option>
+                                <option value="P">Section P</option>
+                                <option value="Q">Section Q</option>
+                                <option value="R">Section R</option>
+                                <option value="S">Section S</option>
+                                <option value="T">Section T</option>
+                            </select>
+                        </div>
+                        <div class="relative flex-grow">
+                            <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                            <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
+                                Search
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                 <!-- Error Message -->
-                <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
-            </main>
+                    <!-- Loading Spinner -->
+                    <div id="loading" class="text-center mt-6 hidden">
+                         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                         <p class="text-gray-500 mt-2">Fetching data...</p>
+                    </div>
+                    
+                    <!-- Main Results Container (Main Board) -->
+                    <div id="resultsContainer" class="hidden">
+                        <!-- Main Board -->
+                        <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
+                            <!-- Content will be injected by JS -->
+                        </div>
+                    </div>
+
+                     <!-- Error Message -->
+                    <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
+                </main>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="w-full text-center p-6 mt-auto">
+            <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
+            <div class="mt-2 text-gray-500 text-sm">
+                <p>Dr. Mohamed Ali</p>
+                <p>Center of Basic Sciences, Physics Department</p>
+                <p>+201002836484</p>
+            </div>
+        </footer>
+    </div> <!-- End of mainViewContainer -->
+
+
+    <!-- This container holds the "detail pages" -->
+    <div id="detailsContainer" class="w-full max-w-5xl mx-auto p-4 md:p-6 hidden">
+        <div>
+            <div id="attendanceContent" class="tab-content">
+                <!-- Attendance data will be injected here -->
+            </div>
+            <div id="caContent" class="tab-content">
+                 <!-- C.A. data will be injected here -->
+            </div>
         </div>
     </div>
     
@@ -193,15 +205,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="w-full text-center p-6 mt-auto">
-        <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
-        <div class="mt-2 text-gray-500 text-sm">
-            <p>Dr. Mohamed Ali</p>
-            <p>Center of Basic Sciences, Physics Department</p>
-            <p>+201002836484</p>
-        </div>
-    </footer>
 
     <script>
         // --- CONFIGURATION ---
@@ -218,11 +221,15 @@
         const studentIdInput = document.getElementById('studentIdInput');
         const searchButton = document.getElementById('searchButton');
         const sectionSelector = document.getElementById('sectionSelector');
+        
+        const mainViewContainer = document.getElementById('mainViewContainer');
+        const detailsContainer = document.getElementById('detailsContainer');
+        
         const resultsContainer = document.getElementById('resultsContainer');
-        const mainBoard = document.getElementById('mainBoard'); // New Main Board
+        const mainBoard = document.getElementById('mainBoard'); 
         const attendanceContent = document.getElementById('attendanceContent');
         const caContent = document.getElementById('caContent');
-        // Tab buttons are removed
+        
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         
@@ -298,7 +305,7 @@
             
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
-            resultsContainer.classList.add('hidden'); // Hide main container
+            resultsContainer.classList.add('hidden'); 
             mainBoard.classList.add('hidden');
             
             try {
@@ -337,22 +344,26 @@
                     // Only found in attendance
                     displayMainBoard(attendanceStudent, null); // Show partial main board
                     displayAttendanceInfo(attendanceStudent);
-                    caContent.innerHTML = '<p class="text-center text-gray-500">No assessment data found for this student.</p>';
+                    caContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p>';
                     studentFound = true;
                 } else if (caStudent) {
                      // Only found in C.A.
                     displayMainBoard(null, caStudent); // Show partial main board
                     displayCAInfo(caStudent); 
-                    attendanceContent.innerHTML = '<p class="text-center text-gray-500">No lab data found for this student.</p>';
+                    attendanceContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p>';
                     studentFound = true;
                 }
 
 
                 if (studentFound) {
-                    resultsContainer.classList.remove('hidden');
+                    // Show the main page elements
+                    mainViewContainer.classList.remove('hidden');
+                    resultsContainer.classList.remove('hidden'); // This was the bug fix
                     mainBoard.classList.remove('hidden');
-                    // Hide detail sections by default
-                    showDetails(null);
+                    // Hide the detail page
+                    detailsContainer.classList.add('hidden');
+                    // Reset/hide detail content
+                    showDetailPage(null);
                 } else {
                     showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
                 }
@@ -445,14 +456,21 @@
                 }
             }
             
-            const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
-            </div>`;
+            const resultCard = `
+                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
+                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
+                </div>`;
             attendanceContent.innerHTML = resultCard;
         }
 
         function displayCAInfo(student) {
+            const quiz1 = parseFloat(student['Q1/10'] || 0);
+            const quiz2 = parseFloat(student['Q2/15'] || 0);
+            const quiz3 = parseFloat(student['Q3/15'] || 0);
+            const quizTotal = quiz1 + quiz2 + quiz3;
+
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
                 { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
@@ -472,10 +490,21 @@
                         </div>`;
             }).join('');
             
-            caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                <h3 class="text-xl font-bold text-gray-700 mb-4">Quiz Details</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
-            </div>`;
+            const totalQuizCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
+            
+            caContent.innerHTML = `
+                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
+                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                    
+                    <div class="mb-6 flex justify-center">
+                         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
+                            ${totalQuizCircle}
+                         </div>
+                    </div>
+                    
+                    <h3 class="text-xl font-bold text-gray-700 mb-4 pt-6 border-t">Quiz Details</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
+                </div>`;
         }
 
         function createCircularProgressBar(score, maxScore, displayText, title = '') {
@@ -567,8 +596,12 @@
             resultsContainer.classList.add('hidden');
         }
 
-        function showDetails(type) {
-            // Hide all content first
+        function showDetailPage(type) {
+            // Hide main view, show detail view
+            mainViewContainer.classList.add('hidden');
+            detailsContainer.classList.remove('hidden');
+            
+            // Hide all detail content first
             attendanceContent.classList.remove('active');
             caContent.classList.remove('active');
 
@@ -577,7 +610,16 @@
             } else if (type === 'assessments') {
                 caContent.classList.add('active');
             }
-            // if type is null, both remain hidden
+        }
+        
+        function hideDetailPage() {
+            // Hide detail view, show main view
+            mainViewContainer.classList.remove('hidden');
+            detailsContainer.classList.add('hidden');
+            
+            // Hide all detail content
+            attendanceContent.classList.remove('active');
+            caContent.classList.remove('active');
         }
 
         // --- EVENT LISTENERS ---
@@ -589,10 +631,17 @@
             const labCard = event.target.closest('#labScoreCardTrigger');
             const quizzesCard = event.target.closest('#quizzesCardTrigger');
 
-            if (labCard) {
-                showDetails('lab');
-            } else if (quizzesCard) {
-                showDetails('assessments');
+            if (labCard && !labCard.classList.contains('opacity-50')) {
+                showDetailPage('lab');
+            } else if (quizzesCard && !quizzesCard.classList.contains('opacity-50')) {
+                showDetailPage('assessments');
+            }
+        });
+        
+        // Event listener for the "Back" buttons
+        detailsContainer.addEventListener('click', (event) => {
+            if (event.target.closest('.back-button')) {
+                hideDetailPage();
             }
         });
 
