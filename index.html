@@ -30,6 +30,31 @@
             font-weight: bold;
             font-size: 1.5rem;
         }
+        /* Tab styles */
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-bottom: 0;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            background-color: #f3f4f6; /* gray-100 */
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #6b7280; /* gray-500 */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(2px);
+        }
+        .tab-button.active {
+            background-color: #f9fafb; /* gray-50 */
+            color: #1f2937; /* gray-800 */
+            border-color: #e5e7eb; /* gray-200 */
+            transform: translateY(0);
+            position: relative;
+            top: 1px;
+            z-index: 10;
+        }
         .tab-content {
             display: none;
         }
@@ -44,7 +69,7 @@
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-        /* Animation styles remain */
+        /* Pendulum Animation */
         @keyframes swing {
             0%, 100% { transform: rotate(0deg); }
             25% { transform: rotate(20deg); }
@@ -54,6 +79,7 @@
             transform-origin: top center;
             animation: swing 2.5s ease-in-out infinite;
         }
+        /* Writing Animation */
         @keyframes writing {
             0%, 100% { transform: rotate(-5deg) translateX(0px); }
             50% { transform: rotate(5deg) translateX(2px); }
@@ -66,105 +92,126 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- This container holds the main page view (header, search, main board) -->
-    <div id="mainViewContainer">
-        <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
-            <!-- Header -->
-            <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
-                <div class="flex-shrink-0">
-                    <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
-                </div>
-                <div class="ml-6 flex-grow">
-                    <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
-                    <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
-                </div>
+    <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
+        <!-- Header -->
+        <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
+            <div class="flex-shrink-0">
+                <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
             </div>
-
-            <!-- Main Content Card -->
-            <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <header class="text-center mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
-                    <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
-                </header>
-
-                <main>
-                    <!-- Search Inputs -->
-                    <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
-                        <div class="flex-shrink-0">
-                            <label for="sectionSelector" class="sr-only">Select Section</label>
-                            <select id="sectionSelector" class="w-full sm:w-auto h-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                                <option value="All">All Sections</option>
-                                <option value="A">Section A</option>
-                                <option value="B">Section B</option>
-                                <option value="C">Section C</option>
-                                <option value="D">Section D</option>
-                                <option value="E">Section E</option>
-                                <option value="F">Section F</option>
-                                <option value="G">Section G</option>
-                                <option value="H">Section H</option>
-                                <option value="I">Section I</option>
-                                <option value="J">Section J</option>
-                                <option value="K">Section K</option>
-                                <option value="L">Section L</option>
-                                <option value="M">Section M</option>
-                                <option value="N">Section N</option>
-                                <option value="O">Section O</option>
-                                <option value="P">Section P</option>
-                                <option value="Q">Section Q</option>
-                                <option value="R">Section R</option>
-                                <option value="S">Section S</option>
-                                <option value="T">Section T</option>
-                            </select>
-                        </div>
-                        <div class="relative flex-grow">
-                            <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                            <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
-                                Search
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Loading Spinner -->
-                    <div id="loading" class="text-center mt-6 hidden">
-                         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                         <p class="text-gray-500 mt-2">Fetching data...</p>
-                    </div>
-                    
-                    <!-- Main Results Container (Main Board) -->
-                    <div id="resultsContainer" class="hidden">
-                        <!-- Main Board -->
-                        <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
-                            <!-- Content will be injected by JS -->
-                        </div>
-                    </div>
-
-                     <!-- Error Message -->
-                    <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
-                </main>
+            <div class="ml-6 flex-grow">
+                <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
+                <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
             </div>
         </div>
-        
-        <!-- Footer -->
-        <footer class="w-full text-center p-6 mt-auto">
-            <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
-            <div class="mt-2 text-gray-500 text-sm">
-                <p>Dr. Mohamed Ali</p>
-                <p>Center of Basic Sciences, Physics Department</p>
-                <p>+201002836484</p>
-            </div>
-        </footer>
-    </div> <!-- End of mainViewContainer -->
 
+        <!-- Main Content Card -->
+        <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
+            <header class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
+                <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
+            </header>
 
-    <!-- This container holds the "detail pages" -->
-    <div id="detailsContainer" class="w-full max-w-5xl mx-auto p-4 md:p-6 hidden">
-        <div>
-            <div id="attendanceContent" class="tab-content">
-                <!-- Attendance data will be injected here -->
-            </div>
-            <div id="caContent" class="tab-content">
-                 <!-- C.A. data will be injected here -->
-            </div>
+            <main>
+                <!-- Search Inputs -->
+                <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
+                    <div class="flex-shrink-0">
+                        <label for="sectionSelector" class="sr-only">Select Section</label>
+                        <select id="sectionSelector" class="w-full sm:w-auto h-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                            <option value="All">All Sections</option>
+                            <option value="A">Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                            <option value="D">Section D</option>
+                            <option value="E">Section E</option>
+                            <option value="F">Section F</option>
+                            <option value="G">Section G</option>
+                            <option value="H">Section H</option>
+                            <option value="I">Section I</option>
+                            <option value="J">Section J</option>
+                            <option value="K">Section K</option>
+                            <option value="L">Section L</option>
+                            <option value="M">Section M</option>
+                            <option value="N">Section N</option>
+                            <option value="O">Section O</option>
+                            <option value="P">Section P</option>
+                            <option value="Q">Section Q</option>
+                            <option value="R">Section R</option>
+                            <option value="S">Section S</option>
+                            <option value="T">Section T</option>
+                        </select>
+                    </div>
+                    <div class="relative flex-grow">
+                        <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
+                        <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div id="loading" class="text-center mt-6 hidden">
+                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                     <p class="text-gray-500 mt-2">Fetching data...</p>
+                </div>
+                
+                <!-- Main Results Container -->
+                <div id="resultsContainer" class="hidden">
+                    <!-- Main Board -->
+                    <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
+                        <!-- Content will be injected by JS -->
+                    </div>
+
+                    <!-- Tabs Container -->
+                    <div id="tabsContainer" class="mt-6">
+                        <!-- Tab Buttons -->
+                        <div class="border-b border-gray-200 mb-4">
+                            <nav class="-mb-px flex flex-wrap justify-center gap-4 sm:gap-6" aria-label="Tabs">
+                                <button id="tabAttendance" class="tab-button">
+                                    <svg class="h-5 w-5 pendulum-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <radialGradient id="grad1" cx="0.3" cy="0.3" r="1">
+                                                <stop offset="0%" stop-color="#e2e8f0"/>
+                                                <stop offset="100%" stop-color="#4a5568"/>
+                                            </radialGradient>
+                                        </defs>
+                                        <path d="M6 3H18" stroke="#718096" stroke-width="2" stroke-linecap="round"/>
+                                        <path d="M12 3V15" stroke="#a0aec0" stroke-width="2" stroke-linecap="round"/>
+                                        <circle cx="12" cy="19" r="4" fill="url(#grad1)" stroke="#4a5568" stroke-width="0.5"/>
+                                    </svg>
+                                    Physics Lab
+                                </button>
+                                <button id="tabCA" class="tab-button">
+                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <!-- Paper -->
+                                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" fill="#FBBF24" />
+                                            <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="#D1D5DB"/>
+                                            <path d="m9 16.01.01-.011M9 12h.01M13 12h3m-3 4h3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <!-- Animated Pen -->
+                                            <g class="writing-pen">
+                                                <path d="M18.828 4.172a2.121 2.121 0 0 0-3 0L7.5 12.5V15h2.5l8.328-8.328a2.121 2.121 0 0 0 0-3z" fill="#3B82F6"/>
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    Assessments
+                                </button>
+                            </nav>
+                        </div>
+                        <!-- Tab Content -->
+                        <div>
+                            <div id="attendanceContent" class="tab-content">
+                                <!-- Attendance data will be injected here -->
+                            </div>
+                            <div id="caContent" class="tab-content">
+                                 <!-- C.A. data will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                 <!-- Error Message -->
+                <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
+            </main>
         </div>
     </div>
     
@@ -205,6 +252,15 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="w-full text-center p-6 mt-auto">
+        <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
+        <div class="mt-2 text-gray-500 text-sm">
+            <p>Dr. Mohamed Ali</p>
+            <p>Center of Basic Sciences, Physics Department</p>
+            <p>+201002836484</p>
+        </div>
+    </footer>
 
     <script>
         // --- CONFIGURATION ---
@@ -221,15 +277,12 @@
         const studentIdInput = document.getElementById('studentIdInput');
         const searchButton = document.getElementById('searchButton');
         const sectionSelector = document.getElementById('sectionSelector');
-        
-        const mainViewContainer = document.getElementById('mainViewContainer');
-        const detailsContainer = document.getElementById('detailsContainer');
-        
         const resultsContainer = document.getElementById('resultsContainer');
-        const mainBoard = document.getElementById('mainBoard'); 
+        const mainBoard = document.getElementById('mainBoard'); // New Main Board
         const attendanceContent = document.getElementById('attendanceContent');
         const caContent = document.getElementById('caContent');
-        
+        const tabAttendance = document.getElementById('tabAttendance');
+        const tabCA = document.getElementById('tabCA');
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         
@@ -305,7 +358,7 @@
             
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
-            resultsContainer.classList.add('hidden'); 
+            resultsContainer.classList.add('hidden'); // Hide main container
             mainBoard.classList.add('hidden');
             
             try {
@@ -344,26 +397,22 @@
                     // Only found in attendance
                     displayMainBoard(attendanceStudent, null); // Show partial main board
                     displayAttendanceInfo(attendanceStudent);
-                    caContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p>';
+                    caContent.innerHTML = '<p class="text-center text-gray-500">No assessment data found for this student.</p>';
                     studentFound = true;
                 } else if (caStudent) {
                      // Only found in C.A.
                     displayMainBoard(null, caStudent); // Show partial main board
                     displayCAInfo(caStudent); 
-                    attendanceContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p>';
+                    attendanceContent.innerHTML = '<p class="text-center text-gray-500">No lab data found for this student.</p>';
                     studentFound = true;
                 }
 
 
                 if (studentFound) {
-                    // Show the main page elements
-                    mainViewContainer.classList.remove('hidden');
-                    resultsContainer.classList.remove('hidden'); // This was the bug fix
+                    resultsContainer.classList.remove('hidden');
                     mainBoard.classList.remove('hidden');
-                    // Hide the detail page
-                    detailsContainer.classList.add('hidden');
-                    // Reset/hide detail content
-                    showDetailPage(null);
+                    // Reset tabs to inactive state
+                    switchTab(null);
                 } else {
                     showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
                 }
@@ -383,22 +432,20 @@
             const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
             const studentSection = attendanceStudent ? attendanceStudent['Section'] : 'N/A';
 
-            // Get Lab Score from attendanceStudent
-            const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
-
-            // Get Grades from caStudent
+            // Get Grades
             const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
             const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
             const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
             const quizTotal = quiz1 + quiz2 + quiz3;
+            const oralScore = caStudent ? caStudent['Oral'] : 'N/A';
             const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
             const totalScore = caStudent ? caStudent['Total'] : 'N/A';
             const rank = caStudent ? caStudent['Rank'] : 'N/A';
 
             // Create Progress Circles
-            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
-            const labScoreCircle = attendanceStudent ? createCircularProgressBar(labScore, 10, labScore, 'Lab Score') : createCircularProgressBar(0, 10, 'N/A', 'Lab Score');
-            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : createCircularProgressBar(0, 20, 'N/A', 'Final Practical');
+            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : '';
+            const oralCircle = caStudent ? createCircularProgressBar(oralScore, 10, oralScore, 'Oral') : '';
+            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : '';
             
             // Total Score & Rank HTML
             const totalScoreHtml = caStudent ? `<p class="text-4xl font-bold text-indigo-600">${totalScore} / 70</p>` : '';
@@ -414,14 +461,14 @@
                 <div class="text-center mb-6 pt-6 border-t"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div>
                 <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t text-center">Main Grades</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div id="quizzesCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${caStudent ? 'cursor-pointer' : 'opacity-50'}">
-                        ${quizCircle}
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${quizCircle || '<p>N/A</p>'}
                     </div>
-                    <div id="labScoreCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${attendanceStudent ? 'cursor-pointer' : 'opacity-50'}">
-                        ${labScoreCircle}
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${oralCircle || '<p>N/A</p>'}
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect opacity-50">
-                        ${practicalCircle}
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
+                        ${practicalCircle || '<p>N/A</p>'}
                     </div>
                 </div>
             `;
@@ -456,12 +503,18 @@
                 }
             }
             
-            const resultCard = `
-                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                    <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
-                </div>`;
+            const totalScore = parseFloat(student['Total']);
+            const maxScore = 10;
+            const progressHtml = createCircularProgressBar(totalScore, maxScore, student['Total']);
+            
+            const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <div class="w-full flex flex-col items-center mb-6">
+                    <p class="text-sm font-medium text-gray-500">Lab Score</p>
+                    ${progressHtml}
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
+            </div>`;
             attendanceContent.innerHTML = resultCard;
         }
 
@@ -470,6 +523,8 @@
             const quiz2 = parseFloat(student['Q2/15'] || 0);
             const quiz3 = parseFloat(student['Q3/15'] || 0);
             const quizTotal = quiz1 + quiz2 + quiz3;
+            
+            const quizTotalCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
 
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
@@ -490,21 +545,16 @@
                         </div>`;
             }).join('');
             
-            const totalQuizCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
-            
-            caContent.innerHTML = `
-                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                    
-                    <div class="mb-6 flex justify-center">
-                         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
-                            ${totalQuizCircle}
-                         </div>
+            caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-700">Quiz Summary</h3>
+                    <div class="w-full flex flex-col items-center mt-2">
+                         ${quizTotalCircle}
                     </div>
-                    
-                    <h3 class="text-xl font-bold text-gray-700 mb-4 pt-6 border-t">Quiz Details</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
-                </div>`;
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Quiz Details</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
+            </div>`;
         }
 
         function createCircularProgressBar(score, maxScore, displayText, title = '') {
@@ -512,7 +562,6 @@
             const maxScoreNum = parseFloat(maxScore);
             
             let scoreColorClass = 'text-gray-700', progressBarColorClass = 'text-gray-400';
-            let progressCircleHtml = '';
 
             if (!isNaN(scoreNum) && !isNaN(maxScoreNum) && maxScoreNum > 0) {
                 const percentage = (scoreNum / maxScoreNum) * 100;
@@ -525,37 +574,13 @@
                 const radius = 40;
                 const circumference = 2 * Math.PI * radius;
                 const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
+                const titleHtml = title ? `<p class="text-base font-bold text-gray-700 -mt-1">${title}</p>` : '';
 
-                progressCircleHtml = `
-                    <svg class="w-full h-full" viewBox="0 0 100 100">
-                        <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/>
-                        <circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" 
-                            style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span>
-                        <span class="text-sm text-gray-500">/ ${maxScore}</span>
-                    </div>
-                `;
-            } else {
-                // Fallback for N/A or invalid data
-                progressCircleHtml = `
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span>
-                    </div>
-                `;
+                return `<div class="relative w-32 h-32 mt-2"><svg class="w-full h-full" viewBox="0 0 100 100"><circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/><circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" /></svg><div class="absolute inset-0 flex flex-col items-center justify-center">${titleHtml}<span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span><span class="text-sm text-gray-500">/ ${maxScore}</span></div></div>`;
             }
-
-            const titleHtml = title ? `<p class="text-base font-bold text-gray-700 mt-2">${title}</p>` : '';
-
-            return `
-                <div class="relative w-32 h-32 mt-2">
-                    ${progressCircleHtml}
-                </div>
-                ${titleHtml}
-            `;
+            // Fallback for N/A or invalid data
+            return `<div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center"><p class="text-base font-bold text-gray-700 -mt-1">${title}</p><span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span></div>`;
         }
-
 
         // --- UTILITY & MODAL FUNCTIONS ---
         const zipgradeModal = document.getElementById('zipgradeModal');
@@ -596,55 +621,31 @@
             resultsContainer.classList.add('hidden');
         }
 
-        function showDetailPage(type) {
-            // Hide main view, show detail view
-            mainViewContainer.classList.add('hidden');
-            detailsContainer.classList.remove('hidden');
-            
-            // Hide all detail content first
-            attendanceContent.classList.remove('active');
-            caContent.classList.remove('active');
-
-            if (type === 'lab') {
+        function switchTab(tabName) {
+            if (tabName === 'attendance') {
+                tabAttendance.classList.add('active');
+                tabCA.classList.remove('active');
                 attendanceContent.classList.add('active');
-            } else if (type === 'assessments') {
+                caContent.classList.remove('active');
+            } else if (tabName === 'ca') {
+                tabAttendance.classList.remove('active');
+                tabCA.classList.add('active');
+                attendanceContent.classList.remove('active');
                 caContent.classList.add('active');
+            } else {
+                // Inactive state
+                tabAttendance.classList.remove('active');
+                tabCA.classList.remove('active');
+                attendanceContent.classList.remove('active');
+                caContent.classList.remove('active');
             }
-        }
-        
-        function hideDetailPage() {
-            // Hide detail view, show main view
-            mainViewContainer.classList.remove('hidden');
-            detailsContainer.classList.add('hidden');
-            
-            // Hide all detail content
-            attendanceContent.classList.remove('active');
-            caContent.classList.remove('active');
         }
 
         // --- EVENT LISTENERS ---
         searchButton.addEventListener('click', findAndDisplayStudent);
         studentIdInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') findAndDisplayStudent(); });
-        
-        // Event listeners for the new clickable cards on the Main Board
-        mainBoard.addEventListener('click', (event) => {
-            const labCard = event.target.closest('#labScoreCardTrigger');
-            const quizzesCard = event.target.closest('#quizzesCardTrigger');
-
-            if (labCard && !labCard.classList.contains('opacity-50')) {
-                showDetailPage('lab');
-            } else if (quizzesCard && !quizzesCard.classList.contains('opacity-50')) {
-                showDetailPage('assessments');
-            }
-        });
-        
-        // Event listener for the "Back" buttons
-        detailsContainer.addEventListener('click', (event) => {
-            if (event.target.closest('.back-button')) {
-                hideDetailPage();
-            }
-        });
-
+        tabAttendance.addEventListener('click', () => switchTab('attendance'));
+        tabCA.addEventListener('click', () => switchTab('ca'));
         closeModalButton.addEventListener('click', hideZipgradeModal);
         zipgradeModal.addEventListener('click', (event) => { if (event.target === zipgradeModal) hideZipgradeModal(); });
 
