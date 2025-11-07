@@ -30,31 +30,7 @@
             font-weight: bold;
             font-size: 1.5rem;
         }
-        /* Tab styles */
-        .tab-button {
-            padding: 0.75rem 1.5rem;
-            border: 1px solid #d1d5db; /* gray-300 */
-            border-bottom: 0;
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
-            background-color: #f3f4f6; /* gray-100 */
-            transition: all 0.3s ease;
-            font-weight: 600;
-            color: #6b7280; /* gray-500 */
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transform: translateY(2px);
-        }
-        .tab-button.active {
-            background-color: #f9fafb; /* gray-50 */
-            color: #1f2937; /* gray-800 */
-            border-color: #e5e7eb; /* gray-200 */
-            transform: translateY(0);
-            position: relative;
-            top: 1px;
-            z-index: 10;
-        }
+        /* Tab styles removed */
         .tab-content {
             display: none;
         }
@@ -69,7 +45,7 @@
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-        /* Pendulum Animation */
+        /* Animation styles remain */
         @keyframes swing {
             0%, 100% { transform: rotate(0deg); }
             25% { transform: rotate(20deg); }
@@ -79,7 +55,6 @@
             transform-origin: top center;
             animation: swing 2.5s ease-in-out infinite;
         }
-        /* Writing Animation */
         @keyframes writing {
             0%, 100% { transform: rotate(-5deg) translateX(0px); }
             50% { transform: rotate(5deg) translateX(2px); }
@@ -161,43 +136,9 @@
                         <!-- Content will be injected by JS -->
                     </div>
 
-                    <!-- Tabs Container -->
-                    <div id="tabsContainer" class="mt-6">
-                        <!-- Tab Buttons -->
-                        <div class="border-b border-gray-200 mb-4">
-                            <nav class="-mb-px flex flex-wrap justify-center gap-4 sm:gap-6" aria-label="Tabs">
-                                <button id="tabAttendance" class="tab-button">
-                                    <svg class="h-5 w-5 pendulum-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <defs>
-                                            <radialGradient id="grad1" cx="0.3" cy="0.3" r="1">
-                                                <stop offset="0%" stop-color="#e2e8f0"/>
-                                                <stop offset="100%" stop-color="#4a5568"/>
-                                            </radialGradient>
-                                        </defs>
-                                        <path d="M6 3H18" stroke="#718096" stroke-width="2" stroke-linecap="round"/>
-                                        <path d="M12 3V15" stroke="#a0aec0" stroke-width="2" stroke-linecap="round"/>
-                                        <circle cx="12" cy="19" r="4" fill="url(#grad1)" stroke="#4a5568" stroke-width="0.5"/>
-                                    </svg>
-                                    Physics Lab
-                                </button>
-                                <button id="tabCA" class="tab-button">
-                                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <g>
-                                            <!-- Paper -->
-                                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" fill="#FBBF24" />
-                                            <path d="M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="#D1D5DB"/>
-                                            <path d="m9 16.01.01-.011M9 12h.01M13 12h3m-3 4h3" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <!-- Animated Pen -->
-                                            <g class="writing-pen">
-                                                <path d="M18.828 4.172a2.121 2.121 0 0 0-3 0L7.5 12.5V15h2.5l8.328-8.328a2.121 2.121 0 0 0 0-3z" fill="#3B82F6"/>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                    Assessments
-                                </button>
-                            </nav>
-                        </div>
-                        <!-- Tab Content -->
+                    <!-- Details Container (replaces tabs) -->
+                    <div id="detailsContainer" class="mt-6">
+                        <!-- Tab Content (now just detail blocks) -->
                         <div>
                             <div id="attendanceContent" class="tab-content">
                                 <!-- Attendance data will be injected here -->
@@ -281,8 +222,7 @@
         const mainBoard = document.getElementById('mainBoard'); // New Main Board
         const attendanceContent = document.getElementById('attendanceContent');
         const caContent = document.getElementById('caContent');
-        const tabAttendance = document.getElementById('tabAttendance');
-        const tabCA = document.getElementById('tabCA');
+        // Tab buttons are removed
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         
@@ -411,8 +351,8 @@
                 if (studentFound) {
                     resultsContainer.classList.remove('hidden');
                     mainBoard.classList.remove('hidden');
-                    // Reset tabs to inactive state
-                    switchTab(null);
+                    // Hide detail sections by default
+                    showDetails(null);
                 } else {
                     showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
                 }
@@ -432,20 +372,22 @@
             const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
             const studentSection = attendanceStudent ? attendanceStudent['Section'] : 'N/A';
 
-            // Get Grades
+            // Get Lab Score from attendanceStudent
+            const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
+
+            // Get Grades from caStudent
             const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
             const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
             const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
             const quizTotal = quiz1 + quiz2 + quiz3;
-            const oralScore = caStudent ? caStudent['Oral'] : 'N/A';
             const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
             const totalScore = caStudent ? caStudent['Total'] : 'N/A';
             const rank = caStudent ? caStudent['Rank'] : 'N/A';
 
             // Create Progress Circles
-            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : '';
-            const oralCircle = caStudent ? createCircularProgressBar(oralScore, 10, oralScore, 'Oral') : '';
-            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : '';
+            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
+            const labScoreCircle = attendanceStudent ? createCircularProgressBar(labScore, 10, labScore, 'Lab Score') : createCircularProgressBar(0, 10, 'N/A', 'Lab Score');
+            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : createCircularProgressBar(0, 20, 'N/A', 'Final Practical');
             
             // Total Score & Rank HTML
             const totalScoreHtml = caStudent ? `<p class="text-4xl font-bold text-indigo-600">${totalScore} / 70</p>` : '';
@@ -461,14 +403,14 @@
                 <div class="text-center mb-6 pt-6 border-t"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div>
                 <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t text-center">Main Grades</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
-                        ${quizCircle || '<p>N/A</p>'}
+                    <div id="quizzesCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${caStudent ? 'cursor-pointer' : 'opacity-50'}">
+                        ${quizCircle}
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
-                        ${oralCircle || '<p>N/A</p>'}
+                    <div id="labScoreCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${attendanceStudent ? 'cursor-pointer' : 'opacity-50'}">
+                        ${labScoreCircle}
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect">
-                        ${practicalCircle || '<p>N/A</p>'}
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect opacity-50">
+                        ${practicalCircle}
                     </div>
                 </div>
             `;
@@ -503,29 +445,14 @@
                 }
             }
             
-            const totalScore = parseFloat(student['Total']);
-            const maxScore = 10;
-            const progressHtml = createCircularProgressBar(totalScore, maxScore, student['Total']);
-            
             const resultCard = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                <div class="w-full flex flex-col items-center mb-6">
-                    <p class="text-sm font-medium text-gray-500">Lab Score</p>
-                    ${progressHtml}
-                </div>
-                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
+                <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
             </div>`;
             attendanceContent.innerHTML = resultCard;
         }
 
         function displayCAInfo(student) {
-            const quiz1 = parseFloat(student['Q1/10'] || 0);
-            const quiz2 = parseFloat(student['Q2/15'] || 0);
-            const quiz3 = parseFloat(student['Q3/15'] || 0);
-            const quizTotal = quiz1 + quiz2 + quiz3;
-            
-            const quizTotalCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
-
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
                 { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
@@ -546,13 +473,7 @@
             }).join('');
             
             caContent.innerHTML = `<div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
-                <div class="text-center mb-6">
-                    <h3 class="text-xl font-bold text-gray-700">Quiz Summary</h3>
-                    <div class="w-full flex flex-col items-center mt-2">
-                         ${quizTotalCircle}
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Quiz Details</h3>
+                <h3 class="text-xl font-bold text-gray-700 mb-4">Quiz Details</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
             </div>`;
         }
@@ -562,6 +483,7 @@
             const maxScoreNum = parseFloat(maxScore);
             
             let scoreColorClass = 'text-gray-700', progressBarColorClass = 'text-gray-400';
+            let progressCircleHtml = '';
 
             if (!isNaN(scoreNum) && !isNaN(maxScoreNum) && maxScoreNum > 0) {
                 const percentage = (scoreNum / maxScoreNum) * 100;
@@ -574,13 +496,37 @@
                 const radius = 40;
                 const circumference = 2 * Math.PI * radius;
                 const offset = circumference - (Math.min(percentage, 100) / 100) * circumference;
-                const titleHtml = title ? `<p class="text-base font-bold text-gray-700 -mt-1">${title}</p>` : '';
 
-                return `<div class="relative w-32 h-32 mt-2"><svg class="w-full h-full" viewBox="0 0 100 100"><circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/><circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" /></svg><div class="absolute inset-0 flex flex-col items-center justify-center">${titleHtml}<span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span><span class="text-sm text-gray-500">/ ${maxScore}</span></div></div>`;
+                progressCircleHtml = `
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/>
+                        <circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" 
+                            style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span>
+                        <span class="text-sm text-gray-500">/ ${maxScore}</span>
+                    </div>
+                `;
+            } else {
+                // Fallback for N/A or invalid data
+                progressCircleHtml = `
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span>
+                    </div>
+                `;
             }
-            // Fallback for N/A or invalid data
-            return `<div class="relative w-32 h-32 mt-2 flex flex-col items-center justify-center"><p class="text-base font-bold text-gray-700 -mt-1">${title}</p><span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span></div>`;
+
+            const titleHtml = title ? `<p class="text-base font-bold text-gray-700 mt-2">${title}</p>` : '';
+
+            return `
+                <div class="relative w-32 h-32 mt-2">
+                    ${progressCircleHtml}
+                </div>
+                ${titleHtml}
+            `;
         }
+
 
         // --- UTILITY & MODAL FUNCTIONS ---
         const zipgradeModal = document.getElementById('zipgradeModal');
@@ -621,31 +567,35 @@
             resultsContainer.classList.add('hidden');
         }
 
-        function switchTab(tabName) {
-            if (tabName === 'attendance') {
-                tabAttendance.classList.add('active');
-                tabCA.classList.remove('active');
+        function showDetails(type) {
+            // Hide all content first
+            attendanceContent.classList.remove('active');
+            caContent.classList.remove('active');
+
+            if (type === 'lab') {
                 attendanceContent.classList.add('active');
-                caContent.classList.remove('active');
-            } else if (tabName === 'ca') {
-                tabAttendance.classList.remove('active');
-                tabCA.classList.add('active');
-                attendanceContent.classList.remove('active');
+            } else if (type === 'assessments') {
                 caContent.classList.add('active');
-            } else {
-                // Inactive state
-                tabAttendance.classList.remove('active');
-                tabCA.classList.remove('active');
-                attendanceContent.classList.remove('active');
-                caContent.classList.remove('active');
             }
+            // if type is null, both remain hidden
         }
 
         // --- EVENT LISTENERS ---
         searchButton.addEventListener('click', findAndDisplayStudent);
         studentIdInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') findAndDisplayStudent(); });
-        tabAttendance.addEventListener('click', () => switchTab('attendance'));
-        tabCA.addEventListener('click', () => switchTab('ca'));
+        
+        // Event listeners for the new clickable cards on the Main Board
+        mainBoard.addEventListener('click', (event) => {
+            const labCard = event.target.closest('#labScoreCardTrigger');
+            const quizzesCard = event.target.closest('#quizzesCardTrigger');
+
+            if (labCard) {
+                showDetails('lab');
+            } else if (quizzesCard) {
+                showDetails('assessments');
+            }
+        });
+
         closeModalButton.addEventListener('click', hideZipgradeModal);
         zipgradeModal.addEventListener('click', (event) => { if (event.target === zipgradeModal) hideZipgradeModal(); });
 
