@@ -220,7 +220,7 @@
         // Sheet 1: Attendance (Requires Sections)
         const GOOGLE_SHEET_1_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
         const SECTION_GIDS_1 = {
-            'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '168050738' // Corrected GID for T
+            'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '1568050738'
         };
 
         // Sheet 2: Continuous Assessment (C.A.) (One Sheet For All Students)
@@ -242,6 +242,35 @@
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
         
+        // --- SWIPE DETECTION ---
+        let touchstartX = 0;
+        let touchendX = 0;
+        const swipeThreshold = 50; // Minimum pixels for a swipe
+
+        document.body.addEventListener('touchstart', e => {
+            // Only track swipes if we are in the details view
+            if (!detailsContainer.classList.contains('hidden')) {
+                touchstartX = e.changedTouches[0].screenX;
+            }
+        }, { passive: true });
+
+        document.body.addEventListener('touchend', e => {
+            if (!detailsContainer.classList.contains('hidden')) {
+                touchendX = e.changedTouches[0].screenX;
+                handleSwipeGesture();
+            }
+        });
+
+        function handleSwipeGesture() {
+            // Check if it was a right swipe (back gesture)
+            if (touchendX > touchstartX + swipeThreshold) {
+                // Check if the swipe started from the left edge of the screen
+                if (touchstartX < (window.innerWidth / 10)) {
+                    hideDetailPage();
+                }
+            }
+        }
+
         // --- FETCH & PARSE FUNCTIONS ---
         async function fetchAttendanceData(baseUrl, gids, section) {
             const gid = gids[section];
