@@ -71,6 +71,13 @@
         .back-button-fab:hover {
             background-color: #2563eb; /* blue-600 */
         }
+        /* Prevent elastic scroll on body, but allow on scrollable elements */
+        body {
+            overscroll-behavior: none;
+        }
+        .scrollable-content {
+            overscroll-behavior: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -166,7 +173,7 @@
 
 
     <!-- This container holds the "detail pages" -->
-    <div id="detailsContainer" class="w-full max-w-5xl mx-auto p-4 md:p-6 hidden">
+    <div id="detailsContainer" class="w-full max-w-5xl mx-auto p-4 md:p-6 hidden scrollable-content">
         <div>
             <div id="attendanceContent" class="tab-content">
                 <!-- Attendance data will be injected here -->
@@ -246,36 +253,58 @@
         let touchstartX = 0;
         let touchendX = 0;
         const swipeThreshold = 50; // Minimum pixels for a swipe
+        let touchstartY = 0;
+        let touchendY = 0;
 
         document.body.addEventListener('touchstart', e => {
-            // Only track swipes if we are in the details view
             if (!detailsContainer.classList.contains('hidden')) {
-                // Check if it's a swipe from the edge
-                if (e.changedTouches[0].screenX < (window.innerWidth / 10)) {
-                    touchstartX = e.changedTouches[0].screenX;
-                     // Prevent the browser's default back navigation
-                    e.preventDefault();
-                } else {
-                    touchstartX = 0; // Don't track if not from edge
+                touchstartX = e.changedTouches[0].screenX;
+                touchstartY = e.changedTouches[0].screenY;
+            }
+        }, { passive: true }); // Use passive: true to avoid blocking scroll
+
+        document.body.addEventListener('touchmove', e => {
+            if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
+                // Check if default is already prevented by an inner element
+                if (e.cancelable) {
+                    const deltaX = e.changedTouches[0].screenX - touchstartX;
+                    const deltaY = e.changedTouches[0].screenY - touchstartY;
+
+                    // Only prevent default if it's a horizontal swipe, not a vertical scroll
+                    if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0) {
+                        // This is a right swipe, prevent browser navigation
+                        e.preventDefault();
+                    }
                 }
             }
-        }, { passive: false }); // Set passive: false to allow preventDefault
+        }, { passive: false }); // Needs to be false to allow preventDefault
 
         document.body.addEventListener('touchend', e => {
             if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
                 touchendX = e.changedTouches[0].screenX;
+                touchendY = e.changedTouches[0].screenY;
                 handleSwipeGesture();
-            }
-        });
-
-        function handleSwipeGesture() {
-            // Check if it was a right swipe (back gesture)
-            if (touchendX > touchstartX + swipeThreshold) {
-                hideDetailPage();
             }
             // Reset coordinates
             touchstartX = 0;
+            touchstartY = 0;
             touchendX = 0;
+            touchendY = 0;
+        });
+
+
+        function handleSwipeGesture() {
+            const deltaX = touchendX - touchstartX;
+            const deltaY = touchendY - touchstartY;
+
+            // Ensure it's a horizontal swipe, not a vertical scroll
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+                // It's a horizontal swipe
+                if (deltaX > 0 && touchstartX < (window.innerWidth / 10)) {
+                    // It's a right swipe from the left edge
+                    hideDetailPage();
+                }
+            }
         }
 
         // --- FETCH & PARSE FUNCTIONS ---
