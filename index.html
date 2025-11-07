@@ -250,12 +250,19 @@
         document.body.addEventListener('touchstart', e => {
             // Only track swipes if we are in the details view
             if (!detailsContainer.classList.contains('hidden')) {
-                touchstartX = e.changedTouches[0].screenX;
+                // Check if it's a swipe from the edge
+                if (e.changedTouches[0].screenX < (window.innerWidth / 10)) {
+                    touchstartX = e.changedTouches[0].screenX;
+                     // Prevent the browser's default back navigation
+                    e.preventDefault();
+                } else {
+                    touchstartX = 0; // Don't track if not from edge
+                }
             }
-        }, { passive: true });
+        }, { passive: false }); // Set passive: false to allow preventDefault
 
         document.body.addEventListener('touchend', e => {
-            if (!detailsContainer.classList.contains('hidden')) {
+            if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
                 touchendX = e.changedTouches[0].screenX;
                 handleSwipeGesture();
             }
@@ -264,10 +271,7 @@
         function handleSwipeGesture() {
             // Check if it was a right swipe (back gesture)
             if (touchendX > touchstartX + swipeThreshold) {
-                // Check if the swipe started from the left edge of the screen
-                if (touchstartX < (window.innerWidth / 10)) {
-                    hideDetailPage();
-                }
+                hideDetailPage();
             }
             // Reset coordinates
             touchstartX = 0;
