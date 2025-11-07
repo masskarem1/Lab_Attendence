@@ -44,6 +44,33 @@
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
+        /* Back Button Styles */
+        .back-button-sticky {
+            position: -webkit-sticky; /* For Safari */
+            position: sticky;
+            top: 1rem; /* 16px */
+            z-index: 10;
+        }
+        /* Floating Action Button (FAB) for mobile */
+        .back-button-fab {
+            position: fixed;
+            bottom: 1.5rem; /* 24px */
+            right: 1.5rem; /* 24px */
+            z-index: 10;
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            width: 3.5rem; /* 56px */
+            height: 3.5rem; /* 56px */
+            border-radius: 9999px; /* full */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: background-color 0.3s ease;
+        }
+        .back-button-fab:hover {
+            background-color: #2563eb; /* blue-600 */
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -193,7 +220,7 @@
         // Sheet 1: Attendance (Requires Sections)
         const GOOGLE_SHEET_1_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
         const SECTION_GIDS_1 = {
-            'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '1568050738'
+            'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '168050738' // Corrected GID for T
         };
 
         // Sheet 2: Continuous Assessment (C.A.) (One Sheet For All Students)
@@ -326,13 +353,13 @@
                     // Only found in attendance
                     displayMainBoard(attendanceStudent, null); // Show partial main board
                     displayAttendanceInfo(attendanceStudent);
-                    caContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p>';
+                    caContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p><button class="back-button back-button-fab sm:hidden">←</button>';
                     studentFound = true;
                 } else if (caStudent) {
                      // Only found in C.A.
                     displayMainBoard(null, caStudent); // Show partial main board
                     displayCAInfo(caStudent); 
-                    attendanceContent.innerHTML = '<button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p>';
+                    attendanceContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p><button class="back-button back-button-fab sm:hidden">←</button>';
                     studentFound = true;
                 }
 
@@ -437,11 +464,21 @@
             }
             
             const resultCard = `
-                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <!-- Desktop back button -->
+                <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
+                
+                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-4 sm:mt-0">
                     <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
-                </div>`;
+                </div>
+
+                <!-- Mobile FAB back button -->
+                <button class="back-button back-button-fab sm:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+            `;
             attendanceContent.innerHTML = resultCard;
         }
 
@@ -473,8 +510,10 @@
             const totalQuizCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
             
             caContent.innerHTML = `
-                <button class="back-button mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in">
+                <!-- Desktop back button -->
+                <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
+                
+                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-4 sm:mt-0">
                     
                     <div class="mb-6 flex justify-center">
                          <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
@@ -484,7 +523,15 @@
                     
                     <h3 class="text-xl font-bold text-gray-700 mb-4 pt-6 border-t">Quiz Details</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
-                </div>`;
+                </div>
+
+                <!-- Mobile FAB back button -->
+                <button class="back-button back-button-fab sm:hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </button>
+            `;
         }
 
         function createCircularProgressBar(score, maxScore, displayText, title = '') {
@@ -558,6 +605,7 @@
             input.select();
             input.setSelectionRange(0, 99999); // For mobile devices
             try {
+                // Use execCommand as a fallback for iframe environments
                 document.execCommand('copy');
                 const copyText = buttonElement.querySelector('.copy-text');
                 if(copyText) {
@@ -590,6 +638,7 @@
             } else if (type === 'assessments') {
                 caContent.classList.add('active');
             }
+             window.scrollTo(0, 0); // Scroll to top
         }
         
         function hideDetailPage() {
@@ -600,6 +649,7 @@
             // Hide all detail content
             attendanceContent.classList.remove('active');
             caContent.classList.remove('active');
+             window.scrollTo(0, 0); // Scroll to top
         }
 
         // --- EVENT LISTENERS ---
