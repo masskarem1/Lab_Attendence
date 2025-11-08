@@ -548,11 +548,6 @@
         }
 
         function displayCAInfo(student) {
-            const quiz1 = parseFloat(student['Q1/10'] || 0);
-            const quiz2 = parseFloat(student['Q2/15'] || 0);
-            const quiz3 = parseFloat(student['Q3/15'] || 0);
-            const quizTotal = quiz1 + quiz2 + quiz3;
-
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
                 { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
@@ -571,22 +566,13 @@
                             ${createCircularProgressBar(card.score, card.max, card.score, card.title)}
                         </div>`;
             }).join('');
-            
-            const totalQuizCircle = createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Total');
-            
+                        
             caContent.innerHTML = `
                 <!-- Desktop back button -->
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
                 <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-4 sm:mt-0">
-                    
-                    <div class="mb-6 flex justify-center">
-                         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center">
-                            ${totalQuizCircle}
-                         </div>
-                    </div>
-                    
-                    <h3 class="text-xl font-bold text-gray-700 mb-4 pt-6 border-t">Quiz Details</h3>
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Quiz Details</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
                 </div>
 
