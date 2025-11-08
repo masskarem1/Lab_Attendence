@@ -100,38 +100,12 @@
             <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
                 <header class="text-center mb-6">
                     <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
-                    <p class="text-gray-500 mt-2">Select a section and enter a Student ID.</p>
+                    <p class="text-gray-500 mt-2">Enter your Student ID to view your details.</p>
                 </header>
 
                 <main>
                     <!-- Search Inputs -->
                     <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
-                        <div class="flex-shrink-0">
-                            <label for="sectionSelector" class="sr-only">Select Section</label>
-                            <select id="sectionSelector" class="w-full sm:w-auto h-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
-                                <option value="All">All Sections</option>
-                                <option value="A">Section A</option>
-                                <option value="B">Section B</option>
-                                <option value="C">Section C</option>
-                                <option value="D">Section D</option>
-                                <option value="E">Section E</option>
-                                <option value="F">Section F</option>
-                                <option value="G">Section G</option>
-                                <option value="H">Section H</option>
-                                <option value="I">Section I</option>
-                                <option value="J">Section J</option>
-                                <option value="K">Section K</option>
-                                <option value="L">Section L</option>
-                                <option value="M">Section M</option>
-                                <option value="N">Section N</option>
-                                <option value="O">Section O</option>
-                                <option value="P">Section P</option>
-                                <option value="Q">Section Q</option>
-                                <option value="R">Section R</option>
-                                <option value="S">Section S</option>
-                                <option value="T">Section T</option>
-                            </select>
-                        </div>
                         <div class="relative flex-grow">
                             <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
                             <button id="searchButton" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors">
@@ -236,7 +210,6 @@
         // --- DOM ELEMENTS ---
         const studentIdInput = document.getElementById('studentIdInput');
         const searchButton = document.getElementById('searchButton');
-        const sectionSelector = document.getElementById('sectionSelector');
         
         const mainViewContainer = document.getElementById('mainViewContainer');
         const detailsContainer = document.getElementById('detailsContainer');
@@ -248,6 +221,10 @@
         
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
+
+        // --- GLOBAL DATA VARS ---
+        let currentStudentList = [];
+        let fullAttendanceData = {}; // Cache for all section data
         
         // --- SWIPE DETECTION ---
         let touchstartX = 0;
@@ -261,23 +238,21 @@
                 touchstartX = e.changedTouches[0].screenX;
                 touchstartY = e.changedTouches[0].screenY;
             }
-        }, { passive: true }); // Use passive: true to avoid blocking scroll
+        }, { passive: true });
 
         document.body.addEventListener('touchmove', e => {
             if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
-                // Check if default is already prevented by an inner element
                 if (e.cancelable) {
                     const deltaX = e.changedTouches[0].screenX - touchstartX;
                     const deltaY = e.changedTouches[0].screenY - touchstartY;
 
-                    // Only prevent default if it's a horizontal swipe, not a vertical scroll
-                    if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0) {
-                        // This is a right swipe, prevent browser navigation
+                    // Only prevent default if it's a horizontal swipe from the edge
+                    if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0 && touchstartX < (window.innerWidth / 10)) {
                         e.preventDefault();
                     }
                 }
             }
-        }, { passive: false }); // Needs to be false to allow preventDefault
+        }, { passive: false });
 
         document.body.addEventListener('touchend', e => {
             if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
@@ -297,25 +272,20 @@
             const deltaX = touchendX - touchstartX;
             const deltaY = touchendY - touchstartY;
 
-            // Ensure it's a horizontal swipe, not a vertical scroll
+            // Check if it's a horizontal swipe that's long enough
             if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-                // It's a horizontal swipe
+                // Check if it's a swipe from the left edge (e.g., first 10% of screen)
                 if (deltaX > 0 && touchstartX < (window.innerWidth / 10)) {
-                    // It's a right swipe from the left edge
                     hideDetailPage();
                 }
             }
         }
 
         // --- FETCH & PARSE FUNCTIONS ---
-        async function fetchAttendanceData(baseUrl, gids, section) {
-            const gid = gids[section];
-            if (!gid) {
-                throw new Error(`The GID for Section ${section} is not configured.`);
-            }
+        async function fetchSheetData(baseUrl, gid) {
             const fetchUrl = `${baseUrl}&gid=${gid}`;
             const response = await fetch(fetchUrl);
-            if (!response.ok) throw new Error(`Network error fetching attendance data for Section ${section}.`);
+            if (!response.ok) throw new Error(`Network error fetching data for GID ${gid}.`);
             return await response.text();
         }
         
@@ -342,7 +312,6 @@
                 structuredHeaders.forEach((header, index) => { student[header] = row[index] || ''; });
                 return student;
             }).filter(student => student['Id']);
-
             return data;
         }
 
@@ -373,9 +342,7 @@
         // --- CORE LOGIC ---
         async function findAndDisplayStudent() {
             const searchId = studentIdInput.value.trim();
-            const selectedSection = sectionSelector.value;
             if (!searchId) { showError('Please enter a Student ID.'); return; }
-            if (!selectedSection) { showError('Please select a section.'); return; }
             
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
@@ -387,8 +354,27 @@
                     throw new Error('The Continuous Assessment sheet URL is not configured.');
                 }
                 
-                const [attendanceCsv, caResponse] = await Promise.all([
-                    fetchAttendanceData(GOOGLE_SHEET_1_BASE_URL, SECTION_GIDS_1, selectedSection),
+                // 1. Fetch "All" sheet to find the student and their section
+                const allSheetCsv = await fetchSheetData(GOOGLE_SHEET_1_BASE_URL, SECTION_GIDS_1['All']);
+                const allStudents = parseAttendanceCSV(allSheetCsv);
+                const studentFromAll = allStudents.find(s => s['Id'] === searchId);
+
+                if (!studentFromAll) {
+                    showError(`No record found for Student ID: ${searchId}.`);
+                    loadingDiv.classList.add('hidden');
+                    return;
+                }
+                
+                const studentSection = studentFromAll['Section'];
+                const sectionGid = SECTION_GIDS_1[studentSection];
+                
+                if (!sectionGid) {
+                    throw new Error(`Invalid or unconfigured section "${studentSection}" found for student.`);
+                }
+
+                // 2. Fetch the specific section sheet and the C.A. sheet in parallel
+                const [sectionSheetCsv, caResponse] = await Promise.all([
+                    fetchSheetData(GOOGLE_SHEET_1_BASE_URL, sectionGid),
                     fetch(GOOGLE_SHEET_2_URL)
                 ]);
 
@@ -397,48 +383,35 @@
                 }
                 const caCsv = await caResponse.text();
 
-                const attendanceData = parseAttendanceCSV(attendanceCsv);
+                // 3. Parse all data
+                // We use the "All" sheet data for the main student info (like 'Total')
+                // No, per user request, we use the SECTION sheet data for attendance/grades
+                const sectionAttendanceData = parseAttendanceCSV(sectionSheetCsv);
+                
+                // We use the specific section sheet to get the student list for revision grouping
+                currentStudentList = sectionAttendanceData.map(s => s['Id']).sort();
+                
+                // Parse C.A. data
                 const caData = parseCaCSV(caCsv);
 
-                const attendanceStudent = attendanceData.find(s => s['Id'] === searchId);
+                // 4. Find the student in all relevant datasets
+                const attendanceStudent = sectionAttendanceData.find(s => s['Id'] === searchId); // Get grades from section sheet
                 const caStudent = caData.find(s => s['Id'] === searchId);
                 
-                let studentFound = false;
                 attendanceContent.innerHTML = '';
                 caContent.innerHTML = '';
                 mainBoard.innerHTML = '';
 
-                if (attendanceStudent && caStudent) {
-                    // Both found, display everything
-                    displayMainBoard(attendanceStudent, caStudent);
-                    displayAttendanceInfo(attendanceStudent);
-                    displayCAInfo(caStudent); 
-                    studentFound = true;
-                } else if (attendanceStudent) {
-                    // Only found in attendance
-                    displayMainBoard(attendanceStudent, null); // Show partial main board
-                    displayAttendanceInfo(attendanceStudent);
-                    caContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p><button class="back-button back-button-fab sm:hidden">←</button>';
-                    studentFound = true;
-                } else if (caStudent) {
-                     // Only found in C.A.
-                    displayMainBoard(null, caStudent); // Show partial main board
-                    displayCAInfo(caStudent); 
-                    attendanceContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p><button class="back-button back-button-fab sm:hidden">←</button>';
-                    studentFound = true;
-                }
+                // 5. Display data
+                displayMainBoard(attendanceStudent, caStudent, studentSection);
+                displayAttendanceInfo(attendanceStudent); // This will use currentStudentList for grouping
+                displayCAInfo(caStudent); 
+                
+                mainViewContainer.classList.remove('hidden');
+                resultsContainer.classList.remove('hidden');
+                mainBoard.classList.remove('hidden');
+                detailsContainer.classList.add('hidden');
 
-
-                if (studentFound) {
-                    // Show the main page elements
-                    mainViewContainer.classList.remove('hidden');
-                    resultsContainer.classList.remove('hidden');
-                    mainBoard.classList.remove('hidden');
-                    // Hide the detail page
-                    detailsContainer.classList.add('hidden');
-                } else {
-                    showError(`No record found for Student ID: ${searchId}. Please check the section and ID.`);
-                }
             } catch (error) {
                 console.error('Error during search:', error);
                 showError(error.message || 'Could not load student data. Please check configurations and connection.');
@@ -449,11 +422,10 @@
         
         // --- DISPLAY FUNCTIONS ---
 
-        function displayMainBoard(attendanceStudent, caStudent) {
-            // Get Info (prioritize attendance sheet for name)
+        function displayMainBoard(attendanceStudent, caStudent, studentSection) {
+            // Get Info
             const studentName = attendanceStudent ? attendanceStudent['Name'] : (caStudent ? caStudent['Name'] : 'N/A');
             const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
-            const studentSection = attendanceStudent ? attendanceStudent['Section'] : 'N/A';
 
             // Get Lab Score from attendanceStudent
             const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
@@ -501,14 +473,44 @@
         }
 
         function displayAttendanceInfo(student) {
+            if (!student) {
+                 attendanceContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p><button class="back-button back-button-fab sm:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></button>';
+                 return;
+            }
+
             const topics = {};
+            let revisionDate = null;
+            let revisionTopic = '';
+
             for (const key in student) {
                 if (key.includes('|')) {
                     const [topic, date, type] = key.split('|');
                     const topicKey = `${topic}|${date}`;
+
+                    if(topic.toLowerCase().includes('revision')) {
+                        revisionTopic = topic;
+                        revisionDate = date; // Store this for later
+                    }
+
                     if (!topics[topicKey]) { topics[topicKey] = { topic, date, attendance: '', degree: '' }; }
                     if (type === 'Att.') topics[topicKey].attendance = student[key];
                     if (type === 'Deg.') topics[topicKey].degree = student[key];
+                }
+            }
+
+            // --- Revision Group Logic ---
+            let studentGroup = null;
+            if (currentStudentList.length > 0 && revisionDate) {
+                // currentStudentList is already the sorted list from the specific section
+                const midPoint = Math.ceil(currentStudentList.length / 2);
+                const studentIndex = currentStudentList.indexOf(student['Id']);
+                
+                if (studentIndex !== -1) {
+                    if (studentIndex < midPoint) {
+                        studentGroup = 1; // Belongs to first group
+                    } else {
+                        studentGroup = 2; // Belongs to second group
+                    }
                 }
             }
 
@@ -521,8 +523,37 @@
 
                 if (item.topic === 'End of Experiments') {
                     topicCardsHtml += `<div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200 text-center col-span-1 md:col-span-2 lg:col-span-3"><h3 class="font-semibold text-blue-800">${item.topic}</h3><p class="text-sm text-blue-600">${item.date}</p></div>`;
-                } else if (item.topic === 'Revision') {
-                    topicCardsHtml += `<div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}"><div class="flex justify-between items-center mb-3"><h3 class="font-semibold text-gray-800">${item.topic}</h3><span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span></div><div class="text-center border-t pt-3 mt-3"><p class="text-sm text-gray-500 mb-1">Attendance</p>${attendanceMark}</div></div>`;
+                } else if (item.topic.toLowerCase().includes('revision')) {
+                    // Revision Logic
+                    let displayDate = item.date;
+                    let groupMessage = `Group 1`;
+                    
+                    if (studentGroup === 2) {
+                        // Calculate next week's date
+                        const [day, month, year] = item.date.split('/');
+                        const originalDate = new Date(`${year}-${month}-${day}`);
+                        originalDate.setDate(originalDate.getDate() + 7); // Add 7 days
+                        displayDate = originalDate.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+                        groupMessage = `Group 2`;
+                    }
+
+                    topicCardsHtml += `
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 transition-shadow duration-300 ${shadowClass} col-span-1 sm:col-span-2 lg:col-span-3">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-semibold text-yellow-800">${item.topic}</h3>
+                                <span class="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full font-medium">${displayDate}</span>
+                            </div>
+                            <div class="flex justify-around border-t border-yellow-200 pt-3 mt-3">
+                                <div class="text-center">
+                                    <p class="text-sm text-yellow-600 mb-1">Attendance</p>
+                                    ${attendanceMark}
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-sm text-yellow-600 mb-1">Your Group</p>
+                                    <p class="font-bold text-xl text-yellow-800">${studentGroup ? groupMessage : 'N/A'}</p>
+                                </div>
+                            </div>
+                        </div>`;
                 } else {
                     topicCardsHtml += `<div class="bg-white p-4 rounded-lg border border-gray-200 transition-shadow duration-300 ${shadowClass}"><div class="flex justify-between items-center mb-3"><h3 class="font-semibold text-gray-800">${item.topic}</h3><span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">${item.date}</span></div><div class="flex justify-around border-t pt-3 mt-3"><div class="text-center"><p class="text-sm text-gray-500 mb-1">Attendance</p>${attendanceMark}</div><div class="text-center"><p class="text-sm text-gray-500 mb-1">Degree</p><p class="font-bold text-xl text-gray-700">${item.degree || '—'}</p></div></div></div>`;
                 }
@@ -548,6 +579,11 @@
         }
 
         function displayCAInfo(student) {
+             if (!student) {
+                 caContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No assessment data found for this student.</p><button class="back-button back-button-fab sm:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></button>';
+                 return;
+            }
+
             const cards = [
                 { title: 'Quiz 1', score: student['Q1/10'], max: 10, type: 'Quiz' },
                 { title: 'Quiz 2', score: student['Q2/15'], max: 15, type: 'Quiz' },
