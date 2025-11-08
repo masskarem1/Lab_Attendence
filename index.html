@@ -12,6 +12,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -36,13 +37,19 @@
         .tab-content.active {
             display: block;
         }
-        /* Card hover effect */
+        /* Card hover effect - enhanced for mobile */
         .card-hover-effect {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         .card-hover-effect:hover {
             transform: translateY(-5px) scale(1.02);
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .card-hover-effect:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
         }
         /* Back Button Styles */
         .back-button-sticky {
@@ -56,7 +63,7 @@
             position: fixed;
             bottom: 1.5rem; /* 24px */
             right: 1.5rem; /* 24px */
-            z-index: 10;
+            z-index: 50;
             background-color: #3b82f6; /* blue-500 */
             color: white;
             width: 3.5rem; /* 56px */
@@ -65,10 +72,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 8px 16px -4px rgb(0 0 0 / 0.3), 0 4px 8px -2px rgb(0 0 0 / 0.2);
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
         }
-        .back-button-fab:hover {
+        .back-button-fab:active {
+            transform: scale(0.95);
             background-color: #2563eb; /* blue-600 */
         }
         /* Prevent elastic scroll on body, but allow on scrollable elements */
@@ -77,6 +86,62 @@
         }
         .scrollable-content {
             overscroll-behavior: auto;
+        }
+        /* Pull to refresh prevention */
+        html, body {
+            overscroll-behavior-y: contain;
+        }
+        /* Better touch scrolling */
+        .scrollable-content {
+            -webkit-overflow-scrolling: touch;
+        }
+        /* Mobile input optimization */
+        input[type="text"] {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        /* Smooth transitions for views */
+        #mainViewContainer, #detailsContainer {
+            transition: opacity 0.2s ease;
+        }
+        /* Loading spinner animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        /* Better button press feedback */
+        button:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        /* Modal improvements for mobile */
+        #zipgradeModal .bg-white {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        /* Ripple effect for cards on mobile */
+        @media (max-width: 640px) {
+            .card-hover-effect {
+                position: relative;
+                overflow: hidden;
+            }
+            .card-hover-effect::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(59, 130, 246, 0.1);
+                transform: translate(-50%, -50%);
+                transition: width 0.4s, height 0.4s;
+            }
+            .card-hover-effect:active::before {
+                width: 300px;
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -130,7 +195,7 @@
                     </div>
 
                      <!-- Error Message -->
-                    <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
+                    <div id="error" classD="text-center mt-6 text-red-500 font-medium hidden"></div>
                 </main>
             </div>
         </div>
@@ -225,7 +290,12 @@
 
         // --- GLOBAL DATA VARS ---
         let currentStudentList = [];
-        let fullAttendanceData = {}; // Cache for all section data
+        let maxScores = {
+            quizzes: 40,
+            lab: 10,
+            practical: 20,
+            total: 70
+        };
         
         // --- SWIPE DETECTION ---
         let touchstartX = 0;
@@ -318,18 +388,41 @@
 
         function parseCaCSV(text) {
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
-            if (rows.length < 6) return []; 
-            const headers = rows[4]; 
+            if (rows.length < 6) {
+                 console.error("C.A. sheet has fewer than 6 rows.");
+                 return { data: [], maxScores: maxScores }; // Return default max scores
+            }
+            
+            const maxScoreRow = rows[2]; // Row 3 in Google Sheets
+            const headers = rows[4]; // Row 5 in Google Sheets
             const dataRows = rows.slice(5);
 
             const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
             const accessCodeColumnIndex = headers.findIndex(h => h.toLowerCase().includes('access code'));
             
+            // Find columns for max scores
+            const maxQuizCol = headers.findIndex(h => h.toLowerCase() === 'c.a'); // P
+            const maxLabCol = headers.findIndex(h => h.toLowerCase().includes('oral')); // Q
+            const maxPracticalCol = headers.findIndex(h => h.toLowerCase().includes('pra')); // R
+            
+            // Extract max scores from Row 3
+            let maxQuizzes = parseFloat(maxScoreRow[maxQuizCol]) || 40;
+            let maxLab = parseFloat(maxScoreRow[maxLabCol]) || 10;
+            let maxPractical = parseFloat(maxScoreRow[maxPracticalCol]) || 20;
+            
+            const newMaxScores = {
+                quizzes: maxQuizzes,
+                lab: maxLab,
+                practical: maxPractical,
+                total: maxQuizzes + maxLab + maxPractical
+            };
+            
             if (idColumnIndex === -1) {
                 console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
-                return []; 
+                return { data: [], maxScores: newMaxScores }; 
             }
-            return dataRows.map(row => {
+
+            const data = dataRows.map(row => {
                 const student = {};
                 headers.forEach((header, index) => {
                     student[header] = row[index] || '';
@@ -338,6 +431,8 @@
                 student['StudentAccessCode'] = accessCodeColumnIndex !== -1 ? row[accessCodeColumnIndex] || '' : '';
                 return student;
             }).filter(student => student['Id'] && student['Id'].trim() !== '');
+            
+            return { data, maxScores: newMaxScores };
         }
 
         // --- CORE LOGIC ---
@@ -390,8 +485,10 @@
                 // We use the specific section sheet to get the student list for revision grouping
                 currentStudentList = sectionAttendanceData.map(s => s['Id']).sort();
                 
-                // Parse C.A. data
-                const caData = parseCaCSV(caCsv);
+                // Parse C.A. data (this will also update the maxScores object)
+                const caParsedData = parseCaCSV(caCsv);
+                const caData = caParsedData.data;
+                maxScores = caParsedData.maxScores; // Update global maxScores
 
                 // 4. Find the student in all relevant datasets
                 const attendanceStudent = sectionAttendanceData.find(s => s['Id'] === searchId); // Get grades from section sheet
@@ -403,6 +500,8 @@
 
                 // 5. Display data
                 displayMainBoard(attendanceStudent, caStudent, studentSection);
+                
+                // Pre-render detail pages
                 displayAttendanceInfo(attendanceStudent); // This will use currentStudentList for grouping
                 displayCAInfo(caStudent); 
                 
@@ -430,26 +529,23 @@
             const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
 
             // Get Grades from caStudent
-            const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
-            const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
-            const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
-            const quizTotal = quiz1 + quiz2 + quiz3;
+            const quizTotal = caStudent ? caStudent['C.A'] : 'N/A';
             const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
-            const totalScore = caStudent ? caStudent['Total'] : 'N/A';
+            const totalScoreValue = (caStudent && caStudent['Total'] && caStudent['Total'].trim() !== '') ? caStudent['Total'] : 'N/A';
             const rank = caStudent ? caStudent['Rank'] : 'N/A';
 
-            // Create Progress Circles
-            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
-            const labScoreCircle = attendanceStudent ? createCircularProgressBar(labScore, 10, labScore, 'Lab Score') : createCircularProgressBar(0, 10, 'N/A', 'Lab Score');
-            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : createCircularProgressBar(0, 20, 'N/A', 'Final Practical');
+            // Create Progress Circles using dynamic maxScores
+            const quizCircle = createCircularProgressBar(quizTotal, maxScores.quizzes, quizTotal, 'Quizzes');
+            const labScoreCircle = createCircularProgressBar(labScore, maxScores.lab, labScore, 'Lab Score');
+            const practicalCircle = createCircularProgressBar(practicalScore, maxScores.practical, practicalScore, 'Final Practical');
             
             // Total Score & Rank HTML
-            const totalScoreHtml = caStudent ? `<p class="text-4xl font-bold text-indigo-600">${totalScore} / 70</p>` : '';
+            const totalScoreHtml = `<div class="text-center"><p class="text-4xl font-bold text-indigo-600">${totalScoreValue}</p><p class="text-sm font-medium text-red-600">out of ${maxScores.total}</p></div>`;
             const rankHtml = caStudent ? `<p class="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Rank: <span class="text-2xl text-amber-500">${rank}</span></p>` : '';
 
 
             const mainBoardHtml = `
-                <div class="mb-4 text-center md:text-left">
+                <div class="mb-4 text-center">
                     <h2 class="text-2xl font-bold text-gray-800">${studentName}</h2>
                     <p class="text-gray-500">Student ID: ${studentId}</p>
                     <p class="text-gray-500 mt-1">Section: ${studentSection || 'N/A'}</p>
@@ -476,6 +572,11 @@
                  attendanceContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p><button class="back-button back-button-fab sm:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></button>';
                  return;
             }
+            
+            // This is the student's total lab score from the attendance sheet
+            const totalScore = parseFloat(student['Total']);
+            const progressHtml = createCircularProgressBar(totalScore, maxScores.lab, student['Total'], 'Practical Score');
+
 
             const topics = {};
             let revisionDate = null;
@@ -563,7 +664,10 @@
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg fade-in mt-4 sm:mt-0">
-                    <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
+                    <div class="flex justify-center mb-4">
+                        ${progressHtml}
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
                 </div>
 
@@ -626,6 +730,8 @@
             
             let scoreColorClass = 'text-gray-700', progressBarColorClass = 'text-gray-400';
             let progressCircleHtml = '';
+            
+            let displayScore = (displayText && displayText.trim() !== '') ? displayText : 'N/A';
 
             if (!isNaN(scoreNum) && !isNaN(maxScoreNum) && maxScoreNum > 0) {
                 const percentage = (scoreNum / maxScoreNum) * 100;
@@ -646,15 +752,16 @@
                             style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span>
-                        <span class="text-sm text-gray-500">/ ${maxScore}</span>
+                        <span class="text-3xl font-bold ${scoreColorClass}">${displayScore}</span>
+                        <span class="text-sm text-gray-500">/ ${maxScoreNum}</span>
                     </div>
                 `;
             } else {
                 // Fallback for N/A or invalid data
                 progressCircleHtml = `
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span>
+                        <span class="text-3xl font-bold text-gray-700">${displayScore}</span>
+                         ${(maxScoreNum > 0) ? `<span class="text-sm text-gray-500">/ ${maxScoreNum}</span>` : ''}
                     </div>
                 `;
             }
