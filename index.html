@@ -22,12 +22,12 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .attendance-tick {
-            color: #10b981; /* green-500 */
+            color: #10b981;
             font-weight: bold;
             font-size: 1.5rem;
         }
          .attendance-cross {
-            color: #ef4444; /* red-500 */
+            color: #ef4444;
             font-weight: bold;
             font-size: 1.5rem;
         }
@@ -37,7 +37,6 @@
         .tab-content.active {
             display: block;
         }
-        /* Card hover effect - enhanced for mobile */
         .card-hover-effect {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
@@ -51,24 +50,22 @@
             transform: scale(0.98);
             box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1);
         }
-        /* Back Button Styles */
         .back-button-sticky {
-            position: -webkit-sticky; /* For Safari */
+            position: -webkit-sticky;
             position: sticky;
-            top: 1rem; /* 16px */
+            top: 1rem;
             z-index: 10;
         }
-        /* Floating Action Button (FAB) for mobile */
         .back-button-fab {
             position: fixed;
-            bottom: 1.5rem; /* 24px */
-            right: 1.5rem; /* 24px */
+            bottom: 1.5rem;
+            right: 1.5rem;
             z-index: 50;
-            background-color: #3b82f6; /* blue-500 */
+            background-color: #3b82f6;
             color: white;
-            width: 3.5rem; /* 56px */
-            height: 3.5rem; /* 56px */
-            border-radius: 9999px; /* full */
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 9999px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -78,49 +75,40 @@
         }
         .back-button-fab:active {
             transform: scale(0.95);
-            background-color: #2563eb; /* blue-600 */
+            background-color: #2563eb;
         }
-        /* Prevent elastic scroll on body, but allow on scrollable elements */
         body {
             overscroll-behavior: none;
         }
         .scrollable-content {
             overscroll-behavior: auto;
         }
-        /* Pull to refresh prevention */
         html, body {
             overscroll-behavior-y: contain;
         }
-        /* Better touch scrolling */
         .scrollable-content {
             -webkit-overflow-scrolling: touch;
         }
-        /* Mobile input optimization */
         input[type="text"] {
-            font-size: 16px; /* Prevents zoom on iOS */
+            font-size: 16px;
         }
-        /* Smooth transitions for views */
         #mainViewContainer, #detailsContainer {
             transition: opacity 0.2s ease;
         }
-        /* Loading spinner animation */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
         .animate-spin {
             animation: spin 1s linear infinite;
         }
-        /* Better button press feedback */
         button:active {
             transform: scale(0.98);
             opacity: 0.9;
         }
-        /* Modal improvements for mobile */
         #zipgradeModal .bg-white {
             max-height: 90vh;
             overflow-y: auto;
         }
-        /* Ripple effect for cards on mobile */
         @media (max-width: 640px) {
             .card-hover-effect {
                 position: relative;
@@ -147,13 +135,10 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- This container holds the main page view (header, search, main board) -->
     <div id="mainViewContainer">
         <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
             
-            <!-- Unified Main Content Card (Header + Search + Results) -->
             <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <!-- Header -->
                 <div class="flex items-center mb-6">
                     <div class="flex-shrink-0">
                         <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
@@ -170,7 +155,6 @@
                 </header>
 
                 <main>
-                    <!-- Search Inputs -->
                     <div class="max-w-lg mx-auto flex flex-col sm:flex-row gap-4">
                         <div class="relative flex-grow">
                             <input type="text" id="studentIdInput" placeholder="Enter Student ID" class="w-full px-4 py-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors">
@@ -180,27 +164,21 @@
                         </div>
                     </div>
 
-                    <!-- Loading Spinner -->
                     <div id="loading" class="text-center mt-6 hidden">
                          <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
                          <p class="text-gray-500 mt-2">Fetching data...</p>
                     </div>
                     
-                    <!-- Main Results Container (Main Board) -->
                     <div id="resultsContainer" class="hidden">
-                        <!-- Main Board -->
                         <div id="mainBoard" class="fade-in mt-6 hidden">
-                            <!-- Content will be injected by JS -->
                         </div>
                     </div>
 
-                     <!-- Error Message -->
-                    <div id="error" classD="text-center mt-6 text-red-500 font-medium hidden"></div>
+                     <div id="error" class="text-center mt-6 text-red-500 font-medium hidden"></div>
                 </main>
             </div>
         </div>
         
-        <!-- Footer -->
         <footer class="w-full text-center p-6 mt-auto">
             <p class="text-gray-600">Wishing you the best of luck in your studies!</p>
             <div class="mt-2 text-gray-500 text-sm">
@@ -209,22 +187,17 @@
                 <p>+201002836484</p>
             </div>
         </footer>
-    </div> <!-- End of mainViewContainer -->
+    </div>
 
-
-    <!-- This container holds the "detail pages" -->
     <div id="detailsContainer" class="w-full max-w-5xl mx-auto p-4 md:p-6 hidden scrollable-content">
         <div>
             <div id="attendanceContent" class="tab-content">
-                <!-- Attendance data will be injected here -->
             </div>
             <div id="caContent" class="tab-content">
-                 <!-- C.A. data will be injected here -->
             </div>
         </div>
     </div>
     
-    <!-- ZipGrade Modal -->
     <div id="zipgradeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center fade-in">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">ZipGrade Login Info</h2>
@@ -261,19 +234,14 @@
         </div>
     </div>
 
-
     <script>
-        // --- CONFIGURATION ---
-        // Sheet 1: Attendance (Requires Sections)
         const GOOGLE_SHEET_1_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
         const SECTION_GIDS_1 = {
             'All': '1650908958', 'A': '1620275840', 'B': '1661871665', 'C': '804746623', 'D': '1998860796', 'E': '1432194061', 'F': '1174976610', 'G': '630589668', 'H': '340172703', 'I': '1823887500', 'J': '1811748047', 'K': '289568000', 'L': '1058769797', 'M': '672465296', 'N': '2018867860', 'O': '2510390', 'P': '1022038284', 'Q': '747459593', 'R': '1912599889', 'S': '554652905', 'T': '1568050738'
         };
 
-        // Sheet 2: Continuous Assessment (C.A.) (One Sheet For All Students)
         const GOOGLE_SHEET_2_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSwOgvVGMBZkhsJY_dTFepiWNuK42nVXTg5ATU1jd0In027rMCC8Qx0o8Wcl7JHMxCNGtUXUMpVsiLv/pub?output=csv';
 
-        // --- DOM ELEMENTS ---
         const studentIdInput = document.getElementById('studentIdInput');
         const searchButton = document.getElementById('searchButton');
         
@@ -288,39 +256,50 @@
         const loadingDiv = document.getElementById('loading');
         const errorDiv = document.getElementById('error');
 
-        // --- GLOBAL DATA VARS ---
         let currentStudentList = [];
-        let maxScores = {
-            quizzes: 40,
-            lab: 10,
-            practical: 20,
-            total: 70
-        };
+        let fullAttendanceData = {};
         
-        // --- SWIPE DETECTION ---
         let touchstartX = 0;
         let touchendX = 0;
-        const swipeThreshold = 50; // Minimum pixels for a swipe
+        const swipeThreshold = 80;
         let touchstartY = 0;
         let touchendY = 0;
+        let isScrolling = null;
+        let swipeHandled = false;
 
         document.body.addEventListener('touchstart', e => {
             if (!detailsContainer.classList.contains('hidden')) {
                 touchstartX = e.changedTouches[0].screenX;
                 touchstartY = e.changedTouches[0].screenY;
+                isScrolling = null;
+                swipeHandled = false;
+                
+                const fab = document.querySelector('.back-button-fab');
+                if (fab && touchstartX < (window.innerWidth / 8)) {
+                    fab.style.transform = 'scale(1.1)';
+                }
             }
         }, { passive: true });
 
         document.body.addEventListener('touchmove', e => {
             if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
-                if (e.cancelable) {
-                    const deltaX = e.changedTouches[0].screenX - touchstartX;
-                    const deltaY = e.changedTouches[0].screenY - touchstartY;
+                const deltaX = e.changedTouches[0].screenX - touchstartX;
+                const deltaY = e.changedTouches[0].screenY - touchstartY;
 
-                    // Only prevent default if it's a horizontal swipe from the edge
-                    if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 0 && touchstartX < (window.innerWidth / 10)) {
+                if (isScrolling === null) {
+                    isScrolling = Math.abs(deltaY) > Math.abs(deltaX);
+                }
+
+                if (!isScrolling && deltaX > 0 && touchstartX < (window.innerWidth / 8)) {
+                    if (e.cancelable) {
                         e.preventDefault();
                     }
+                    
+                    swipeHandled = true;
+                    
+                    const progress = Math.min(deltaX / 150, 1);
+                    detailsContainer.style.opacity = 1 - (progress * 0.3);
+                    detailsContainer.style.transform = `translateX(${deltaX * 0.5}px)`;
                 }
             }
         }, { passive: false });
@@ -329,30 +308,42 @@
             if (!detailsContainer.classList.contains('hidden') && touchstartX !== 0) {
                 touchendX = e.changedTouches[0].screenX;
                 touchendY = e.changedTouches[0].screenY;
-                handleSwipeGesture();
+                
+                if (swipeHandled) {
+                    handleSwipeGesture();
+                }
+                
+                detailsContainer.style.opacity = '1';
+                detailsContainer.style.transform = 'translateX(0)';
+                const fab = document.querySelector('.back-button-fab');
+                if (fab) fab.style.transform = 'scale(1)';
             }
-            // Reset coordinates
             touchstartX = 0;
             touchstartY = 0;
             touchendX = 0;
             touchendY = 0;
+            isScrolling = null;
+            swipeHandled = false;
         });
-
 
         function handleSwipeGesture() {
             const deltaX = touchendX - touchstartX;
             const deltaY = touchendY - touchstartY;
 
-            // Check if it's a horizontal swipe that's long enough
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-                // Check if it's a swipe from the left edge (e.g., first 10% of screen)
-                if (deltaX > 0 && touchstartX < (window.innerWidth / 10)) {
+            if (Math.abs(deltaX) > Math.abs(deltaY) && deltaX > swipeThreshold) {
+                if (touchstartX < (window.innerWidth / 8)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
                     hideDetailPage();
+                    
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(10);
+                    }
                 }
             }
         }
 
-        // --- FETCH & PARSE FUNCTIONS ---
         async function fetchSheetData(baseUrl, gid) {
             const fetchUrl = `${baseUrl}&gid=${gid}`;
             const response = await fetch(fetchUrl);
@@ -388,41 +379,18 @@
 
         function parseCaCSV(text) {
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
-            if (rows.length < 6) {
-                 console.error("C.A. sheet has fewer than 6 rows.");
-                 return { data: [], maxScores: maxScores }; // Return default max scores
-            }
-            
-            const maxScoreRow = rows[2]; // Row 3 in Google Sheets
-            const headers = rows[4]; // Row 5 in Google Sheets
+            if (rows.length < 6) return []; 
+            const headers = rows[4]; 
             const dataRows = rows.slice(5);
 
             const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
             const accessCodeColumnIndex = headers.findIndex(h => h.toLowerCase().includes('access code'));
             
-            // Find columns for max scores
-            const maxQuizCol = headers.findIndex(h => h.toLowerCase() === 'c.a'); // P
-            const maxLabCol = headers.findIndex(h => h.toLowerCase().includes('oral')); // Q
-            const maxPracticalCol = headers.findIndex(h => h.toLowerCase().includes('pra')); // R
-            
-            // Extract max scores from Row 3
-            let maxQuizzes = parseFloat(maxScoreRow[maxQuizCol]) || 40;
-            let maxLab = parseFloat(maxScoreRow[maxLabCol]) || 10;
-            let maxPractical = parseFloat(maxScoreRow[maxPracticalCol]) || 20;
-            
-            const newMaxScores = {
-                quizzes: maxQuizzes,
-                lab: maxLab,
-                practical: maxPractical,
-                total: maxQuizzes + maxLab + maxPractical
-            };
-            
             if (idColumnIndex === -1) {
                 console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
-                return { data: [], maxScores: newMaxScores }; 
+                return []; 
             }
-
-            const data = dataRows.map(row => {
+            return dataRows.map(row => {
                 const student = {};
                 headers.forEach((header, index) => {
                     student[header] = row[index] || '';
@@ -431,11 +399,8 @@
                 student['StudentAccessCode'] = accessCodeColumnIndex !== -1 ? row[accessCodeColumnIndex] || '' : '';
                 return student;
             }).filter(student => student['Id'] && student['Id'].trim() !== '');
-            
-            return { data, maxScores: newMaxScores };
         }
 
-        // --- CORE LOGIC ---
         async function findAndDisplayStudent() {
             const searchId = studentIdInput.value.trim();
             if (!searchId) { showError('Please enter a Student ID.'); return; }
@@ -450,7 +415,6 @@
                     throw new Error('The Continuous Assessment sheet URL is not configured.');
                 }
                 
-                // 1. Fetch "All" sheet to find the student and their section
                 const allSheetCsv = await fetchSheetData(GOOGLE_SHEET_1_BASE_URL, SECTION_GIDS_1['All']);
                 const allStudents = parseAttendanceCSV(allSheetCsv);
                 const studentFromAll = allStudents.find(s => s['Id'] === searchId);
@@ -468,7 +432,6 @@
                     throw new Error(`Invalid or unconfigured section "${studentSection}" found for student.`);
                 }
 
-                // 2. Fetch the specific section sheet and the C.A. sheet in parallel
                 const [sectionSheetCsv, caResponse] = await Promise.all([
                     fetchSheetData(GOOGLE_SHEET_1_BASE_URL, sectionGid),
                     fetch(GOOGLE_SHEET_2_URL)
@@ -479,30 +442,21 @@
                 }
                 const caCsv = await caResponse.text();
 
-                // 3. Parse all data
                 const sectionAttendanceData = parseAttendanceCSV(sectionSheetCsv);
                 
-                // We use the specific section sheet to get the student list for revision grouping
                 currentStudentList = sectionAttendanceData.map(s => s['Id']).sort();
                 
-                // Parse C.A. data (this will also update the maxScores object)
-                const caParsedData = parseCaCSV(caCsv);
-                const caData = caParsedData.data;
-                maxScores = caParsedData.maxScores; // Update global maxScores
+                const caData = parseCaCSV(caCsv);
 
-                // 4. Find the student in all relevant datasets
-                const attendanceStudent = sectionAttendanceData.find(s => s['Id'] === searchId); // Get grades from section sheet
+                const attendanceStudent = sectionAttendanceData.find(s => s['Id'] === searchId);
                 const caStudent = caData.find(s => s['Id'] === searchId);
                 
                 attendanceContent.innerHTML = '';
                 caContent.innerHTML = '';
                 mainBoard.innerHTML = '';
 
-                // 5. Display data
                 displayMainBoard(attendanceStudent, caStudent, studentSection);
-                
-                // Pre-render detail pages
-                displayAttendanceInfo(attendanceStudent); // This will use currentStudentList for grouping
+                displayAttendanceInfo(attendanceStudent);
                 displayCAInfo(caStudent); 
                 
                 mainViewContainer.classList.remove('hidden');
@@ -518,31 +472,26 @@
             }
         }
         
-        // --- DISPLAY FUNCTIONS ---
-
         function displayMainBoard(attendanceStudent, caStudent, studentSection) {
-            // Get Info
             const studentName = attendanceStudent ? attendanceStudent['Name'] : (caStudent ? caStudent['Name'] : 'N/A');
             const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
 
-            // Get Lab Score from attendanceStudent
             const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
 
-            // Get Grades from caStudent
-            const quizTotal = caStudent ? caStudent['C.A'] : 'N/A';
+            const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
+            const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
+            const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
+            const quizTotal = quiz1 + quiz2 + quiz3;
             const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
-            const totalScoreValue = (caStudent && caStudent['Total'] && caStudent['Total'].trim() !== '') ? caStudent['Total'] : 'N/A';
+            const totalScore = caStudent ? caStudent['Total'] : 'N/A';
             const rank = caStudent ? caStudent['Rank'] : 'N/A';
 
-            // Create Progress Circles using dynamic maxScores
-            const quizCircle = createCircularProgressBar(quizTotal, maxScores.quizzes, quizTotal, 'Quizzes');
-            const labScoreCircle = createCircularProgressBar(labScore, maxScores.lab, labScore, 'Lab Score');
-            const practicalCircle = createCircularProgressBar(practicalScore, maxScores.practical, practicalScore, 'Final Practical');
+            const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
+            const labScoreCircle = attendanceStudent ? createCircularProgressBar(labScore, 10, labScore, 'Lab Score') : createCircularProgressBar(0, 10, 'N/A', 'Lab Score');
+            const practicalCircle = caStudent ? createCircularProgressBar(practicalScore, 20, practicalScore, 'Final Practical') : createCircularProgressBar(0, 20, 'N/A', 'Final Practical');
             
-            // Total Score & Rank HTML
-            const totalScoreHtml = `<div class="text-center"><p class="text-4xl font-bold text-indigo-600">${totalScoreValue}</p><p class="text-sm font-medium text-red-600">out of ${maxScores.total}</p></div>`;
+            const totalScoreHtml = caStudent ? `<p class="text-4xl font-bold text-indigo-600">${totalScore} / 70</p>` : '';
             const rankHtml = caStudent ? `<p class="text-lg font-semibold text-gray-600 flex items-center justify-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>Rank: <span class="text-2xl text-amber-500">${rank}</span></p>` : '';
-
 
             const mainBoardHtml = `
                 <div class="mb-4 text-center">
@@ -572,11 +521,6 @@
                  attendanceContent.innerHTML = '<button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button><p class="text-center text-gray-500">No lab data found for this student.</p><button class="back-button back-button-fab sm:hidden"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg></button>';
                  return;
             }
-            
-            // This is the student's total lab score from the attendance sheet
-            const totalScore = parseFloat(student['Total']);
-            const progressHtml = createCircularProgressBar(totalScore, maxScores.lab, student['Total'], 'Practical Score');
-
 
             const topics = {};
             let revisionDate = null;
@@ -589,7 +533,7 @@
 
                     if(topic.toLowerCase().includes('revision')) {
                         revisionTopic = topic;
-                        revisionDate = date; // Store this for later
+                        revisionDate = date;
                     }
 
                     if (!topics[topicKey]) { topics[topicKey] = { topic, date, attendance: '', degree: '' }; }
@@ -598,18 +542,16 @@
                 }
             }
 
-            // --- Revision Group Logic ---
             let studentGroup = null;
             if (currentStudentList.length > 0 && revisionDate) {
-                // currentStudentList is already the sorted list from the specific section
                 const midPoint = Math.ceil(currentStudentList.length / 2);
                 const studentIndex = currentStudentList.indexOf(student['Id']);
                 
                 if (studentIndex !== -1) {
                     if (studentIndex < midPoint) {
-                        studentGroup = 1; // Belongs to first group
+                        studentGroup = 1;
                     } else {
-                        studentGroup = 2; // Belongs to second group
+                        studentGroup = 2;
                     }
                 }
             }
@@ -624,16 +566,14 @@
                 if (item.topic === 'End of Experiments') {
                     topicCardsHtml += `<div class="bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-200 text-center col-span-1 md:col-span-2 lg:col-span-3"><h3 class="font-semibold text-blue-800">${item.topic}</h3><p class="text-sm text-blue-600">${item.date}</p></div>`;
                 } else if (item.topic.toLowerCase().includes('revision')) {
-                    // Revision Logic
                     let displayDate = item.date;
                     let groupMessage = `Group 1`;
                     
                     if (studentGroup === 2) {
-                        // Calculate next week's date
                         const [day, month, year] = item.date.split('/');
                         const originalDate = new Date(`${year}-${month}-${day}`);
-                        originalDate.setDate(originalDate.getDate() + 7); // Add 7 days
-                        displayDate = originalDate.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+                        originalDate.setDate(originalDate.getDate() + 7);
+                        displayDate = originalDate.toLocaleDateString('en-GB');
                         groupMessage = `Group 2`;
                     }
 
@@ -660,18 +600,13 @@
             }
             
             const resultCard = `
-                <!-- Desktop back button -->
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg fade-in mt-4 sm:mt-0">
-                    <div class="flex justify-center mb-4">
-                        ${progressHtml}
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t">Experiments & Attendance</h3>
+                    <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
                 </div>
 
-                <!-- Mobile FAB back button -->
                 <button class="back-button back-button-fab sm:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -707,7 +642,6 @@
             }).join('');
                         
             caContent.innerHTML = `
-                <!-- Desktop back button -->
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg fade-in mt-4 sm:mt-0">
@@ -715,7 +649,6 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
                 </div>
 
-                <!-- Mobile FAB back button -->
                 <button class="back-button back-button-fab sm:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -730,8 +663,6 @@
             
             let scoreColorClass = 'text-gray-700', progressBarColorClass = 'text-gray-400';
             let progressCircleHtml = '';
-            
-            let displayScore = (displayText && displayText.trim() !== '') ? displayText : 'N/A';
 
             if (!isNaN(scoreNum) && !isNaN(maxScoreNum) && maxScoreNum > 0) {
                 const percentage = (scoreNum / maxScoreNum) * 100;
@@ -752,16 +683,14 @@
                             style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold ${scoreColorClass}">${displayScore}</span>
-                        <span class="text-sm text-gray-500">/ ${maxScoreNum}</span>
+                        <span class="text-3xl font-bold ${scoreColorClass}">${displayText || 'N/A'}</span>
+                        <span class="text-sm text-gray-500">/ ${maxScore}</span>
                     </div>
                 `;
             } else {
-                // Fallback for N/A or invalid data
                 progressCircleHtml = `
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span class="text-3xl font-bold text-gray-700">${displayScore}</span>
-                         ${(maxScoreNum > 0) ? `<span class="text-sm text-gray-500">/ ${maxScoreNum}</span>` : ''}
+                        <span class="text-3xl font-bold text-gray-700">${displayText || 'N/A'}</span>
                     </div>
                 `;
             }
@@ -776,8 +705,6 @@
             `;
         }
 
-
-        // --- UTILITY & MODAL FUNCTIONS ---
         const zipgradeModal = document.getElementById('zipgradeModal');
         const closeModalButton = document.getElementById('closeModalButton');
         const modalStudentId = document.getElementById('modalStudentId');
@@ -796,19 +723,41 @@
         window.copyToClipboard = function(elementId, buttonElement) {
             const input = document.getElementById(elementId);
             input.select();
-            input.setSelectionRange(0, 99999); // For mobile devices
+            input.setSelectionRange(0, 99999);
             try {
-                // Use execCommand as a fallback for iframe environments
-                document.execCommand('copy');
-                const copyText = buttonElement.querySelector('.copy-text');
-                if(copyText) {
-                    copyText.textContent = 'Copied!';
-                    setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(input.value).then(() => {
+                        const copyText = buttonElement.querySelector('.copy-text');
+                        if(copyText) {
+                            copyText.textContent = 'Copied!';
+                            setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                        }
+                        if (window.navigator && window.navigator.vibrate) {
+                            window.navigator.vibrate(10);
+                        }
+                    }).catch(err => {
+                        console.error('Failed to copy: ', err);
+                        fallbackCopy();
+                    });
+                } else {
+                    fallbackCopy();
+                }
+                
+                function fallbackCopy() {
+                    document.execCommand('copy');
+                    const copyText = buttonElement.querySelector('.copy-text');
+                    if(copyText) {
+                        copyText.textContent = 'Copied!';
+                        setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                    }
+                    if (window.navigator && window.navigator.vibrate) {
+                        window.navigator.vibrate(10);
+                    }
                 }
             } catch (err) {
                 console.error('Failed to copy text: ', err);
             }
-            window.getSelection().removeAllRanges(); // Deselect
+            window.getSelection().removeAllRanges();
         }
 
         function showError(message) {
@@ -818,38 +767,58 @@
         }
 
         function showDetailPage(type) {
-            // Hide main view, show detail view
-            mainViewContainer.classList.add('hidden');
-            detailsContainer.classList.remove('hidden');
-            
-            // Hide all detail content first
-            attendanceContent.classList.remove('active');
-            caContent.classList.remove('active');
+            mainViewContainer.style.opacity = '0';
+            setTimeout(() => {
+                mainViewContainer.classList.add('hidden');
+                detailsContainer.classList.remove('hidden');
+                detailsContainer.style.opacity = '0';
+                
+                attendanceContent.classList.remove('active');
+                caContent.classList.remove('active');
 
-            if (type === 'lab') {
-                attendanceContent.classList.add('active');
-            } else if (type === 'assessments') {
-                caContent.classList.add('active');
-            }
-             window.scrollTo(0, 0); // Scroll to top
+                if (type === 'lab') {
+                    attendanceContent.classList.add('active');
+                } else if (type === 'assessments') {
+                    caContent.classList.add('active');
+                }
+                
+                setTimeout(() => {
+                    detailsContainer.style.opacity = '1';
+                }, 10);
+                
+                window.scrollTo({top: 0, behavior: 'smooth'});
+                
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(5);
+                }
+            }, 200);
         }
         
         function hideDetailPage() {
-            // Hide detail view, show main view
-            mainViewContainer.classList.remove('hidden');
-            detailsContainer.classList.add('hidden');
-            
-            // Hide all detail content
-            attendanceContent.classList.remove('active');
-            caContent.classList.remove('active');
-             window.scrollTo(0, 0); // Scroll to top
+            detailsContainer.style.opacity = '0';
+            setTimeout(() => {
+                mainViewContainer.classList.remove('hidden');
+                detailsContainer.classList.add('hidden');
+                mainViewContainer.style.opacity = '0';
+                
+                attendanceContent.classList.remove('active');
+                caContent.classList.remove('active');
+                
+                setTimeout(() => {
+                    mainViewContainer.style.opacity = '1';
+                }, 10);
+                
+                window.scrollTo({top: 0, behavior: 'smooth'});
+                
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(5);
+                }
+            }, 200);
         }
 
-        // --- EVENT LISTENERS ---
         searchButton.addEventListener('click', findAndDisplayStudent);
         studentIdInput.addEventListener('keyup', (event) => { if (event.key === 'Enter') findAndDisplayStudent(); });
         
-        // Event listeners for the new clickable cards on the Main Board
         mainBoard.addEventListener('click', (event) => {
             const labCard = event.target.closest('#labScoreCardTrigger');
             const quizzesCard = event.target.closest('#quizzesCardTrigger');
@@ -861,7 +830,6 @@
             }
         });
         
-        // Event listener for the "Back" buttons
         detailsContainer.addEventListener('click', (event) => {
             if (event.target.closest('.back-button')) {
                 hideDetailPage();
