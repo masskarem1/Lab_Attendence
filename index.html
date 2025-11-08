@@ -85,20 +85,21 @@
     <!-- This container holds the main page view (header, search, main board) -->
     <div id="mainViewContainer">
         <div class="w-full max-w-5xl mx-auto p-4 md:p-6">
-            <!-- Header -->
-            <div class="flex items-center bg-white p-4 rounded-xl shadow-md mb-6">
-                <div class="flex-shrink-0">
-                    <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
-                </div>
-                <div class="ml-6 flex-grow">
-                    <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
-                    <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
-                </div>
-            </div>
-
-            <!-- Main Content Card -->
+            
+            <!-- Unified Main Content Card (Header + Search + Results) -->
             <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
-                <header class="text-center mb-6">
+                <!-- Header -->
+                <div class="flex items-center mb-6">
+                    <div class="flex-shrink-0">
+                        <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
+                    </div>
+                    <div class="ml-6 flex-grow">
+                        <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
+                        <p class="text-sm md:text-base mt-1" style="color: #2a5298;">Faculty of Oral and Dental Surgery — Fall 2025-2026 PHYS.101 Lab Attendance</p>
+                    </div>
+                </div>
+
+                <header class="text-center mb-6 pt-6 border-t border-gray-200">
                     <h1 class="text-3xl font-bold text-gray-800">Student Portal</h1>
                     <p class="text-gray-500 mt-2">Enter your Student ID to view your details.</p>
                 </header>
@@ -123,7 +124,7 @@
                     <!-- Main Results Container (Main Board) -->
                     <div id="resultsContainer" class="hidden">
                         <!-- Main Board -->
-                        <div id="mainBoard" class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-6 hidden">
+                        <div id="mainBoard" class="fade-in mt-6 hidden">
                             <!-- Content will be injected by JS -->
                         </div>
                     </div>
@@ -384,8 +385,6 @@
                 const caCsv = await caResponse.text();
 
                 // 3. Parse all data
-                // We use the "All" sheet data for the main student info (like 'Total')
-                // No, per user request, we use the SECTION sheet data for attendance/grades
                 const sectionAttendanceData = parseAttendanceCSV(sectionSheetCsv);
                 
                 // We use the specific section sheet to get the student list for revision grouping
@@ -458,13 +457,13 @@
                 <div class="text-center mb-6 pt-6 border-t"><h3 class="text-xl font-bold text-gray-700">Total Score & Rank</h3><div class="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-2">${totalScoreHtml}${rankHtml}</div></div>
                 <h3 class="text-xl font-bold text-gray-700 mb-4 mt-6 pt-6 border-t text-center">Main Grades</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div id="quizzesCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${caStudent ? 'cursor-pointer' : 'opacity-50'}">
+                    <div id="quizzesCardTrigger" class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${caStudent ? 'cursor-pointer' : 'opacity-50'}">
                         ${quizCircle}
                     </div>
-                    <div id="labScoreCardTrigger" class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${attendanceStudent ? 'cursor-pointer' : 'opacity-50'}">
+                    <div id="labScoreCardTrigger" class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${attendanceStudent ? 'cursor-pointer' : 'opacity-50'}">
                         ${labScoreCircle}
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect opacity-50">
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect opacity-50">
                         ${practicalCircle}
                     </div>
                 </div>
@@ -563,7 +562,7 @@
                 <!-- Desktop back button -->
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-4 sm:mt-0">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg fade-in mt-4 sm:mt-0">
                     <h3 class="text-xl font-bold text-gray-700 mb-4">Experiments & Attendance</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:col-cols-3 gap-4">${topicCardsHtml}</div>
                 </div>
@@ -607,7 +606,7 @@
                 <!-- Desktop back button -->
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
-                <div class="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 fade-in mt-4 sm:mt-0">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-lg fade-in mt-4 sm:mt-0">
                     <h3 class="text-xl font-bold text-gray-700 mb-4">Quiz Details</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">${markCardsHtml}</div>
                 </div>
