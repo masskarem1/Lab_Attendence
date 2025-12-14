@@ -6,6 +6,8 @@
     <title>Student Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cairo Font for Arabic support -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
 
@@ -16,6 +18,10 @@
             flex-direction: column;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
+        }
+        /* Apply Cairo font specifically to Arabic text areas if needed, or generally */
+        .font-arabic {
+            font-family: 'Cairo', 'Inter', sans-serif;
         }
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
@@ -121,7 +127,7 @@
             opacity: 1 !important;
         }
 
-        #zipgradeModal .bg-white {
+        #zipgradeModal .bg-white, #practicalReviewModal .bg-white {
             max-height: 90vh;
             overflow-y: auto;
         }
@@ -157,7 +163,7 @@
             <div class="w-full bg-white rounded-xl shadow-lg p-6 md:p-8">
                 <div class="flex items-center mb-6">
                     <div class="flex-shrink-0">
-                        <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" />
+                        <img src="MUST.png" alt="MUST Logo" class="h-24 w-24 object-contain" onerror="this.src='https://placehold.co/100x100/1e3c72/FFFFFF?text=MUST&font=inter'"/>
                     </div>
                     <div class="ml-6 flex-grow">
                         <h1 class="text-2xl md:text-3xl font-bold" style="color: #1e3c72;">Misr University for Science and Technology</h1>
@@ -214,6 +220,7 @@
         </div>
     </div>
     
+    <!-- ZipGrade Modal -->
     <div id="zipgradeModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md text-center fade-in">
             <h2 class="text-2xl font-bold text-gray-800 mb-2">ZipGrade Login Info</h2>
@@ -250,6 +257,49 @@
         </div>
     </div>
 
+    <!-- Practical Review Modal (New) -->
+    <div id="practicalReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden font-arabic">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md text-right fade-in relative overflow-hidden">
+            <!-- Decorative circle -->
+            <div class="absolute -top-10 -left-10 w-24 h-24 bg-yellow-100 rounded-full blur-xl opacity-50"></div>
+            
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex flex-row-reverse items-center justify-end gap-2 border-b pb-3">
+                 تنويه هام: مراجعة تصحيح العملي <span class="text-2xl">🔔</span>
+            </h2>
+            
+            <p class="text-gray-600 mb-5 leading-relaxed text-lg">
+                يمكنكم مراجعة وتدقيق تصحيح الجزء العملي من المقرر.
+            </p>
+
+            <div class="space-y-3 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <div class="flex flex-row-reverse justify-between items-center">
+                    <span class="font-bold text-gray-700">:التجربة</span>
+                    <span class="text-gray-900 font-semibold dir-ltr" id="reviewExperiment"></span>
+                </div>
+                <div class="flex flex-row-reverse justify-between items-center">
+                    <span class="font-bold text-gray-700">:المعني بالمراجعة</span>
+                    <span class="text-gray-900 font-semibold" id="reviewName"></span>
+                </div>
+                <div class="flex flex-row-reverse justify-between items-center">
+                    <span class="font-bold text-gray-700">:المكان</span>
+                    <span class="text-gray-900 font-semibold" id="reviewLocation">معمل 304PH</span>
+                </div>
+                <div class="flex flex-row-reverse justify-between items-center">
+                    <span class="font-bold text-gray-700">:الموعد</span>
+                    <span class="text-gray-900 font-semibold" id="reviewDate"></span>
+                </div>
+            </div>
+
+            <p class="text-sm text-red-500 font-medium mb-6 flex flex-row-reverse items-start gap-1">
+                 ملاحظة: يرجى الحضور في الموعد المحدد لإنهاء عملية المراجعة.
+            </p>
+
+            <button id="closeReviewModalButton" class="w-full bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
     <script>
         const GOOGLE_SHEET_1_BASE_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTTAvVKy59t4ZTV_GQPKQbUS-tchpK9OugsPXL41ScMQXsA1pDh467cksdR32pct8_bjgpOJ4NpgrZA/pub?output=csv&single=true';
         const FINAL_EXAM_GID = '1063209357';
@@ -267,7 +317,7 @@
         const detailsContainer = document.getElementById('detailsContainer');
         
         const resultsContainer = document.getElementById('resultsContainer');
-        const mainBoard = document.getElementById('mainBoard'); 
+        const mainBoard = document.getElementById('mainBoard');    
         const attendanceContent = document.getElementById('attendanceContent');
         const caContent = document.getElementById('caContent');
         
@@ -276,6 +326,7 @@
 
         let currentStudentList = [];
         let fullAttendanceData = {};
+        let currentFinalExamStudent = null; // Store for modal access
         
         let touchstartX = 0;
         let touchendX = 0;
@@ -386,7 +437,7 @@
                 if (dateRow[i]) currentDate = dateRow[i];
                 let header = headerRow[i];
                 if (i === 5) { structuredHeaders.push('Section'); continue; }
-                if (header === 'Att.' || header === 'Deg.') { structuredHeaders.push(`${currentTopic}|${currentDate}|${header}`); } 
+                if (header === 'Att.' || header === 'Deg.') { structuredHeaders.push(`${currentTopic}|${currentDate}|${header}`); }    
                 else { structuredHeaders.push(header); }
             }
             const data = dataRows.map(row => {
@@ -399,8 +450,8 @@
 
         function parseCaCSV(text) {
             const rows = text.split(/\r?\n/).map(row => row.split(',').map(cell => cell.trim()));
-            if (rows.length < 6) return []; 
-            const headers = rows[4]; 
+            if (rows.length < 6) return [];    
+            const headers = rows[4];    
             const dataRows = rows.slice(5);
 
             const idColumnIndex = headers.findIndex(h => h.toLowerCase().includes('id'));
@@ -408,7 +459,7 @@
             
             if (idColumnIndex === -1) {
                 console.error("Could not find a column with 'id' in the C.A. sheet's 5th row.");
-                return []; 
+                return [];    
             }
             return dataRows.map(row => {
                 const student = {};
@@ -441,7 +492,10 @@
                     day: row[4] || '',
                     time: row[5] || '',
                     date: row[6] || '',
-                    location: row[7] || ''
+                    location: row[7] || '',
+                    experiment: row[8] || '', // Column I (index 8) - التجربة
+                    reviewer: row[12] || '',  // Column M (index 12) - المعني بالمراجعة
+                    reviewDate: row[13] || '' // Column N (index 13) - الموعد
                 };
             }).filter(item => item.id && item.id.trim() !== '');
         }
@@ -452,7 +506,7 @@
             
             loadingDiv.classList.remove('hidden');
             errorDiv.classList.add('hidden');
-            resultsContainer.classList.add('hidden'); 
+            resultsContainer.classList.add('hidden');    
             mainBoard.classList.add('hidden');
             
             try {
@@ -499,13 +553,15 @@
                 const caStudent = caData.find(s => s['Id'] === searchId);
                 const finalExamStudent = finalExamData.find(s => s.id === searchId);
                 
+                currentFinalExamStudent = finalExamStudent; // Save for modal
+
                 attendanceContent.innerHTML = '';
                 caContent.innerHTML = '';
                 mainBoard.innerHTML = '';
 
                 displayMainBoard(attendanceStudent, caStudent, studentSection, finalExamStudent);
                 displayAttendanceInfo(attendanceStudent);
-                displayCAInfo(caStudent); 
+                displayCAInfo(caStudent);    
                 
                 mainViewContainer.classList.remove('hidden');
                 resultsContainer.classList.remove('hidden');
@@ -525,13 +581,20 @@
             const studentId = attendanceStudent ? attendanceStudent['Id'] : (caStudent ? caStudent['Id'] : 'N/A');
 
             const labScore = attendanceStudent ? attendanceStudent['Total'] : 'N/A';
+            const labScoreNum = parseFloat(labScore) || 0; // Get numeric value for sum
 
             const quiz1 = caStudent ? parseFloat(caStudent['Q1/10'] || 0) : 0;
             const quiz2 = caStudent ? parseFloat(caStudent['Q2/15'] || 0) : 0;
             const quiz3 = caStudent ? parseFloat(caStudent['Q3/15'] || 0) : 0;
             const quizTotal = quiz1 + quiz2 + quiz3;
             const practicalScore = caStudent ? caStudent['pra'] : 'N/A';
-            const totalScore = caStudent ? (caStudent['Total'] || 'N/A') : 'N/A';
+            const practicalScoreNum = parseFloat(practicalScore) || 0; // Get numeric value for sum
+            
+            // Calculate total score locally
+            const calculatedTotal = labScoreNum + quizTotal + practicalScoreNum;
+            // Check if any data was available to make a calculation
+            const totalScore = (attendanceStudent || caStudent) ? calculatedTotal.toFixed(1) : 'N/A'; // Display with one decimal place, or N/A if no data
+
             const rank = caStudent ? (caStudent['Rank'] || 'N/A') : 'N/A';
 
             const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
@@ -611,7 +674,8 @@
                     <div id="labScoreCardTrigger" class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${attendanceStudent ? 'cursor-pointer' : 'opacity-50'}">
                         ${labScoreCircle}
                     </div>
-                    <div class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect opacity-50">
+                    <!-- Added ID and Logic for triggering the Practical Review Modal -->
+                    <div id="practicalScoreCardTrigger" class="bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col items-center card-hover-effect ${finalExamStudent ? 'cursor-pointer' : 'opacity-50'}">
                         ${practicalCircle}
                     </div>
                 </div>
@@ -743,7 +807,7 @@
                             ${createCircularProgressBar(card.score, card.max, card.score, card.title)}
                         </div>`;
             }).join('');
-                        
+                            
             caContent.innerHTML = `
                 <button class="back-button back-button-sticky hidden sm:block mb-4 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">← Back to Main Board</button>
                 
@@ -769,10 +833,10 @@
 
             if (!isNaN(scoreNum) && !isNaN(maxScoreNum) && maxScoreNum > 0) {
                 const percentage = (scoreNum / maxScoreNum) * 100;
-                if (percentage >= 90) { scoreColorClass = 'text-green-600'; progressBarColorClass = 'text-green-600'; } 
-                else if (percentage >= 70) { scoreColorClass = 'text-lime-500'; progressBarColorClass = 'text-lime-500'; } 
-                else if (percentage >= 50) { scoreColorClass = 'text-yellow-400'; progressBarColorClass = 'text-yellow-400'; } 
-                else if (percentage >= 30) { scoreColorClass = 'text-orange-500'; progressBarColorClass = 'text-orange-500'; } 
+                if (percentage >= 90) { scoreColorClass = 'text-green-600'; progressBarColorClass = 'text-green-600'; }    
+                else if (percentage >= 70) { scoreColorClass = 'text-lime-500'; progressBarColorClass = 'text-lime-500'; }    
+                else if (percentage >= 50) { scoreColorClass = 'text-yellow-400'; progressBarColorClass = 'text-yellow-400'; }    
+                else if (percentage >= 30) { scoreColorClass = 'text-orange-500'; progressBarColorClass = 'text-orange-500'; }    
                 else { scoreColorClass = 'text-red-600'; progressBarColorClass = 'text-red-600'; }
                 
                 const radius = 40;
@@ -782,7 +846,7 @@
                 progressCircleHtml = `
                     <svg class="w-full h-full" viewBox="0 0 100 100">
                         <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"/>
-                        <circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50" 
+                        <circle class="${progressBarColorClass}" stroke-width="10" stroke-linecap="round" stroke="currentColor" fill="transparent" r="${radius}" cx="50" cy="50"    
                             style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset}; transition: stroke-dashoffset 0.5s ease 0s; transform: rotate(-90deg); transform-origin: 50% 50%;" />
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -809,10 +873,13 @@
         }
 
         const zipgradeModal = document.getElementById('zipgradeModal');
+        const practicalReviewModal = document.getElementById('practicalReviewModal');
         const closeModalButton = document.getElementById('closeModalButton');
+        const closeReviewModalButton = document.getElementById('closeReviewModalButton');
         const modalStudentId = document.getElementById('modalStudentId');
         const modalAccessCode = document.getElementById('modalAccessCode');
 
+        // ZipGrade Modal Logic
         function showZipgradeModal(studentId, accessCode) {
             modalStudentId.value = studentId;
             modalAccessCode.value = accessCode;
@@ -821,6 +888,24 @@
 
         function hideZipgradeModal() {
             zipgradeModal.classList.add('hidden');
+        }
+
+        // Practical Review Modal Logic
+        function showPracticalReviewModal() {
+            if (!currentFinalExamStudent) return;
+            
+            document.getElementById('reviewExperiment').textContent = currentFinalExamStudent.experiment || '—';
+            document.getElementById('reviewName').textContent = currentFinalExamStudent.reviewer || '—';
+            document.getElementById('reviewDate').textContent = currentFinalExamStudent.reviewDate || '—';
+            // Location is static "معمل 304PH" as per request/image, but we also fallback to data if valid
+            const loc = currentFinalExamStudent.location || 'معمل 304PH';
+            document.getElementById('reviewLocation').textContent = loc;
+            
+            practicalReviewModal.classList.remove('hidden');
+        }
+
+        function hidePracticalReviewModal() {
+            practicalReviewModal.classList.add('hidden');
         }
 
         window.copyToClipboard = function(elementId, buttonElement) {
@@ -925,11 +1010,14 @@
         mainBoard.addEventListener('click', (event) => {
             const labCard = event.target.closest('#labScoreCardTrigger');
             const quizzesCard = event.target.closest('#quizzesCardTrigger');
+            const practicalCard = event.target.closest('#practicalScoreCardTrigger'); // New trigger
 
             if (labCard && !labCard.classList.contains('opacity-50')) {
                 showDetailPage('lab');
             } else if (quizzesCard && !quizzesCard.classList.contains('opacity-50')) {
                 showDetailPage('assessments');
+            } else if (practicalCard && !practicalCard.classList.contains('opacity-50')) {
+                showPracticalReviewModal();
             }
         });
         
@@ -941,6 +1029,10 @@
 
         closeModalButton.addEventListener('click', hideZipgradeModal);
         zipgradeModal.addEventListener('click', (event) => { if (event.target === zipgradeModal) hideZipgradeModal(); });
+
+        // Practical Review Modal Listeners
+        closeReviewModalButton.addEventListener('click', hidePracticalReviewModal);
+        practicalReviewModal.addEventListener('click', (event) => { if (event.target === practicalReviewModal) hidePracticalReviewModal(); });
 
         caContent.addEventListener('click', (event) => {
             const card = event.target.closest('.quiz-card');
