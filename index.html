@@ -322,18 +322,29 @@
         </div>
     </div>
 
-    <!-- Congratulations Modal (Updated for Top 3) -->
-    <div id="congratsModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[60] hidden">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center relative overflow-hidden animate-pop-in">
-            <!-- Decorative Gradient Background (Dynamic) -->
-            <div id="congratsBgGradient" class="absolute inset-0 bg-gradient-to-b from-yellow-100 to-transparent opacity-50"></div>
+    <!-- Congratulations Modal (Updated for Game Style Transparency) -->
+    <div id="congratsModal" class="fixed inset-0 bg-black bg-opacity-85 flex items-center justify-center p-4 z-[60] hidden">
+        <div class="w-full max-w-sm text-center relative animate-pop-in">
+            <!-- Decorative Glow Behind Trophy -->
+            <div id="congratsBgGradient" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-yellow-500 rounded-full blur-3xl opacity-40 -z-10"></div>
             
-            <div class="relative z-10">
-                <div id="congratsIcon" class="text-6xl mb-4">🏆</div>
-                <h2 id="congratsTitle" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 to-orange-600 mb-2 drop-shadow-sm">Congratulations!</h2>
-                <p id="congratsRankMsg" class="text-xl font-bold text-gray-800 mb-4">You are Ranked #1!</p>
-                <p class="text-gray-600 mb-6">Outstanding performance. Keep up the amazing work!</p>
-                <button id="congratsButton" onclick="closeCongratsModal()" class="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-opacity-50">
+            <div class="relative z-10 flex flex-col items-center">
+                <!-- Icon with bounce animation -->
+                <div id="congratsIcon" class="text-8xl mb-6 animate-bounce drop-shadow-2xl">🏆</div>
+                
+                <h2 id="congratsTitle" class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] filter">
+                    Congratulations!
+                </h2>
+                
+                <p id="congratsRankMsg" class="text-2xl font-bold text-white mb-2 drop-shadow-md">
+                    You are Ranked #1!
+                </p>
+                
+                <p class="text-gray-200 mb-8 text-lg font-medium drop-shadow-sm">
+                    Outstanding performance.<br>Keep up the amazing work!
+                </p>
+                
+                <button id="congratsButton" onclick="closeCongratsModal()" class="bg-gradient-to-b from-yellow-400 to-orange-600 border-b-4 border-orange-800 text-white font-bold py-3 px-10 rounded-full shadow-lg transform transition active:scale-95 active:border-b-0 active:translate-y-1 hover:brightness-110">
                     Awesome!
                 </button>
             </div>
@@ -734,8 +745,6 @@
             mainBoard.innerHTML = mainBoardHtml;
         }
 
-        // ... (existing displayAttendanceInfo, displayCAInfo, createCircularProgressBar functions remain unchanged) ...
-
         const congratsModal = document.getElementById('congratsModal');
         const congratsBgGradient = document.getElementById('congratsBgGradient');
         const congratsIcon = document.getElementById('congratsIcon');
@@ -746,36 +755,42 @@
         function updateCongratsModal(rank) {
             // Default Gold/Rank 1 settings
             let icon = '🏆';
-            let titleGradient = 'from-yellow-500 to-orange-600';
-            let bgGradient = 'from-yellow-100 to-transparent';
-            let btnGradient = 'from-yellow-400 to-orange-500';
-            let ringColor = 'focus:ring-orange-400';
+            // Game-style text gradients (Top to Bottom)
+            let titleGradient = 'from-yellow-300 to-yellow-600'; 
+            // Glow color
+            let glowColor = 'bg-yellow-500';
+            // Button style
+            let btnGradient = 'from-yellow-400 to-orange-600 border-orange-800';
             let msg = `You are Ranked #${rank}!`;
 
             if (rank === 2) {
-                // Silver Settings
+                // Silver Settings - Enhanced Shine
                 icon = '🥈';
-                titleGradient = 'from-gray-400 to-gray-600';
-                bgGradient = 'from-gray-100 to-transparent';
-                btnGradient = 'from-gray-400 to-gray-500';
-                ringColor = 'focus:ring-gray-400';
+                // Using via-slate-300 creates a "highlight" reflection effect
+                titleGradient = 'from-white via-slate-300 to-slate-500';
+                glowColor = 'bg-slate-300';
+                btnGradient = 'from-slate-100 via-slate-300 to-slate-500 border-slate-600';
             } else if (rank === 3) {
                 // Bronze Settings
                 icon = '🥉';
-                titleGradient = 'from-orange-600 to-amber-700'; // Darker orange/brown
-                bgGradient = 'from-orange-100 to-transparent';
-                btnGradient = 'from-orange-500 to-amber-600';
-                ringColor = 'focus:ring-orange-500';
+                titleGradient = 'from-orange-300 to-orange-700'; 
+                glowColor = 'bg-orange-600';
+                btnGradient = 'from-orange-400 to-orange-700 border-orange-900';
             }
 
             // Apply updates
             congratsIcon.textContent = icon;
             congratsRankMsg.textContent = msg;
             
-            // Reset and apply classes
-            congratsBgGradient.className = `absolute inset-0 bg-gradient-to-b ${bgGradient} opacity-50`;
-            congratsTitle.className = `text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${titleGradient} mb-2 drop-shadow-sm`;
-            congratsButton.className = `bg-gradient-to-r ${btnGradient} text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 ${ringColor} focus:ring-opacity-50`;
+            // Apply Glow Class
+            // Reset class list first to remove old colors, then add base classes + new color
+            congratsBgGradient.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl opacity-40 -z-10 ${glowColor}`;
+            
+            // Apply Title Gradient
+            congratsTitle.className = `text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b ${titleGradient} mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] filter`;
+            
+            // Apply Button Styles
+            congratsButton.className = `bg-gradient-to-b ${btnGradient} border-b-4 text-white font-bold py-3 px-10 rounded-full shadow-lg transform transition active:scale-95 active:border-b-0 active:translate-y-1 hover:brightness-110`;
         }
         
         function showCongratsModal() {
@@ -788,9 +803,11 @@
 
         function playCelebrationSound() {
             // Magic chime sound for celebration
-            const audio = new Audio('https://www.soundjay.com/misc/sounds/magic-chime-01.mp3');
-            audio.volume = 0.6; // Set volume to 60%
-            audio.play().catch(e => console.log("Audio play failed (user interaction required):", e));
+            // Using a reliable URL to avoid syntax errors from long Base64 strings
+            const soundUrl = "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"; 
+            const audioObj = new Audio(soundUrl);
+            audioObj.volume = 0.6;
+            audioObj.play().catch(e => console.log("Audio play failed (user interaction required):", e));
         }
 
         function fireConfetti() {
