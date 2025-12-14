@@ -257,17 +257,18 @@
         </div>
     </div>
 
-    <!-- Practical Review Modal (Revised Layout for Mobile - Table View) -->
+    <!-- Practical Review Modal (Refined for One-Line Fit on Mobile) -->
     <div id="practicalReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden font-arabic">
         <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md fade-in relative overflow-hidden">
             <!-- Decorative circle -->
             <div class="absolute -top-10 -left-10 w-24 h-24 bg-yellow-100 rounded-full blur-xl opacity-50"></div>
             
-            <!-- Header (Kept in Arabic as requested, only table changed) -->
+            <!-- Header -->
             <div class="flex flex-col items-center justify-center border-b pb-4 mb-4" dir="rtl">
-                 <div class="flex items-center gap-2 mb-2">
-                    <span class="text-3xl">🔔</span>
-                    <h2 class="text-lg sm:text-xl font-bold text-gray-800">تنويه هام: مراجعة تصحيح العملي</h2>
+                 <div class="flex items-center gap-2 mb-2 w-full justify-center">
+                    <span class="text-2xl sm:text-3xl">🔔</span>
+                    <!-- Title resized and forced to one line -->
+                    <h2 class="text-base sm:text-xl font-bold text-gray-800 whitespace-nowrap">تنويه هام: مراجعة تصحيح العملي</h2>
                  </div>
                  <p class="text-gray-600 text-center leading-relaxed text-sm sm:text-base">
                     يمكنكم مراجعة وتدقيق تصحيح الجزء العملي من المقرر.
@@ -276,23 +277,24 @@
 
             <!-- Details Table (Table Layout - LTR & English Labels) -->
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-100 mb-6 overflow-hidden">
-                <table class="w-full text-left text-sm sm:text-base">
+                <!-- Text size reduced to text-xs on mobile to ensure single line fit -->
+                <table class="w-full text-left text-xs sm:text-base">
                     <tbody>
                         <tr class="border-b border-gray-200 last:border-0">
-                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-4 w-1/3">Experiment:</td>
-                            <td class="py-2 text-gray-900 font-semibold" id="reviewExperiment"></td>
+                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-2 w-auto">Experiment:</td>
+                            <td class="py-2 text-gray-900 font-semibold whitespace-nowrap" id="reviewExperiment"></td>
                         </tr>
                         <tr class="border-b border-gray-200 last:border-0">
-                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-4">Reviewer:</td>
-                            <td class="py-2 text-gray-900 font-semibold" id="reviewName"></td>
+                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-2">Reviewer:</td>
+                            <td class="py-2 text-gray-900 font-semibold whitespace-nowrap" id="reviewName"></td>
                         </tr>
                         <tr class="border-b border-gray-200 last:border-0">
-                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-4">Location:</td>
-                            <td class="py-2 text-gray-900 font-semibold" id="reviewLocation">304 LB PH</td>
+                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-2">Location:</td>
+                            <td class="py-2 text-gray-900 font-semibold whitespace-nowrap" id="reviewLocation">304 LB PH</td>
                         </tr>
                         <tr class="last:border-0">
-                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-4 align-top">Date:</td>
-                            <td class="py-2 text-gray-900 font-semibold leading-relaxed" id="reviewDate"></td>
+                            <td class="py-2 font-bold text-gray-700 whitespace-nowrap pr-2 align-top">Date:</td>
+                            <td class="py-2 text-gray-900 font-semibold whitespace-nowrap" id="reviewDate"></td>
                         </tr>
                     </tbody>
                 </table>
