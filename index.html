@@ -760,36 +760,57 @@
             let glowColor = 'bg-yellow-500';
             // Button style
             let btnGradient = 'from-yellow-400 to-orange-600 border-orange-800';
+            let ringColor = 'focus:ring-orange-400';
             let msg = `You are Ranked #${rank}!`;
+            
+            // Icon Styling (Gold) - Shiny and Metallic
+            // saturate: Boosts color to make it rich gold
+            // brightness & contrast: Creates the metallic shine
+            // drop-shadow: Adds a warm golden glow
+            let iconStyle = 'text-8xl mb-6 animate-bounce drop-shadow-[0_0_25px_rgba(234,179,8,0.8)] filter brightness-125 saturate-150 contrast-125';
 
             if (rank === 2) {
-                // Silver Settings - Enhanced Shine
+                // Silver Settings - Metallic & Shiny
                 icon = '🥈';
-                // Using via-slate-300 creates a "highlight" reflection effect
-                titleGradient = 'from-white via-slate-300 to-slate-500';
-                glowColor = 'bg-slate-300';
-                btnGradient = 'from-slate-100 via-slate-300 to-slate-500 border-slate-600';
+                titleGradient = 'from-[#E8E8E8] via-[#BCC6CC] to-[#757575]';
+                glowColor = 'bg-[#C0C0C0]';
+                btnGradient = 'from-[#C0C0C0] to-[#707070] border-[#505050]';
+                ringColor = 'focus:ring-gray-400';
+                
+                // Silver Icon Specifics:
+                // grayscale(1): Pure silver/grey
+                // brightness & contrast: High shine
+                // drop-shadow: Bright silver glow
+                iconStyle = 'text-8xl mb-6 animate-bounce drop-shadow-[0_0_25px_#C0C0C0] filter grayscale(1) brightness-125 contrast-150';
+                
             } else if (rank === 3) {
-                // Bronze Settings
+                // Bronze Settings - Metallic & Shiny
                 icon = '🥉';
                 titleGradient = 'from-orange-300 to-orange-700'; 
                 glowColor = 'bg-orange-600';
                 btnGradient = 'from-orange-400 to-orange-700 border-orange-900';
+                ringColor = 'focus:ring-orange-500';
+                
+                // Bronze Icon Specifics:
+                // sepia: Gives the reddish/copper tone
+                // brightness & contrast: Makes it look like polished metal
+                // drop-shadow: Warm copper glow
+                iconStyle = 'text-8xl mb-6 animate-bounce drop-shadow-[0_0_25px_rgba(180,83,9,0.8)] filter sepia-[.5] brightness-110 contrast-125';
             }
 
             // Apply updates
             congratsIcon.textContent = icon;
+            congratsIcon.className = iconStyle;
             congratsRankMsg.textContent = msg;
             
             // Apply Glow Class
-            // Reset class list first to remove old colors, then add base classes + new color
             congratsBgGradient.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl opacity-40 -z-10 ${glowColor}`;
             
             // Apply Title Gradient
             congratsTitle.className = `text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b ${titleGradient} mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] filter`;
             
             // Apply Button Styles
-            congratsButton.className = `bg-gradient-to-b ${btnGradient} border-b-4 text-white font-bold py-3 px-10 rounded-full shadow-lg transform transition active:scale-95 active:border-b-0 active:translate-y-1 hover:brightness-110`;
+            congratsButton.className = `bg-gradient-to-b ${btnGradient} border-b-4 text-white font-bold py-3 px-10 rounded-full shadow-lg transform transition active:scale-95 active:border-b-0 active:translate-y-1 hover:brightness-110 focus:outline-none focus:ring-2 ${ringColor} focus:ring-opacity-50`;
         }
         
         function showCongratsModal() {
@@ -801,20 +822,31 @@
         }
 
         function playCelebrationSound() {
-            // استخدام ملف الصوت المحلي كما هو مطلوب
-            const soundUrl = "brass-horn-fanfare-charge-epic-stock-media-1-00-03.mp3";
+            // الملف الصوتي الأول (الموسيقى الاحتفالية)
+            const soundUrl1 = "brass-horn-fanfare-charge-epic-stock-media-1-00-03.mp3";
+            // الملف الصوتي الثاني (صوتك)
+            const soundUrl2 = "my_voice.mp3";
             
-            const audioObj = new Audio(soundUrl);
-            audioObj.volume = 0.6;
+            const audioObj1 = new Audio(soundUrl1);
+            audioObj1.volume = 0.6;
             
-            // محاولة التشغيل
-            const playPromise = audioObj.play();
+            // تشغيل الملف الأول
+            const playPromise = audioObj1.play();
             
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("Audio play failed (file not found or browser policy):", error);
+                    console.log("Audio 1 play failed (file not found or browser policy):", error);
                 });
             }
+
+            // عند انتهاء الملف الأول، قم بتشغيل الملف الثاني
+            audioObj1.onended = function() {
+                const audioObj2 = new Audio(soundUrl2);
+                audioObj2.volume = 0.6;
+                audioObj2.play().catch(error => {
+                    console.log("Audio 2 play failed:", error);
+                });
+            };
         }
 
         function fireConfetti() {
