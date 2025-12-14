@@ -802,12 +802,20 @@
         }
 
         function playCelebrationSound() {
-            // Magic chime sound for celebration
-            // Using a reliable URL to avoid syntax errors from long Base64 strings
-            const soundUrl = "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"; 
+            // استخدام ملف الصوت المحلي كما هو مطلوب
+            const soundUrl = "brass-horn-fanfare-charge-epic-stock-media-1-00-03.mp3";
+            
             const audioObj = new Audio(soundUrl);
             audioObj.volume = 0.6;
-            audioObj.play().catch(e => console.log("Audio play failed (user interaction required):", e));
+            
+            // محاولة التشغيل
+            const playPromise = audioObj.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Audio play failed (file not found or browser policy):", error);
+                });
+            }
         }
 
         function fireConfetti() {
