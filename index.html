@@ -651,12 +651,11 @@
 
             // --- Top 3 Celebration Logic ---
             if (!isNaN(rankNum) && rankNum >= 1 && rankNum <= 3) {
-                setTimeout(() => {
-                    updateCongratsModal(rankNum);
-                    fireConfetti();
-                    playCelebrationSound();
-                    showCongratsModal();
-                }, 500); // Slight delay for better effect
+                // Execute immediately without delay
+                updateCongratsModal(rankNum);
+                fireConfetti();
+                playCelebrationSound();
+                showCongratsModal();
             }
 
             const quizCircle = caStudent ? createCircularProgressBar(quizTotal, 40, quizTotal.toFixed(1), 'Quizzes') : createCircularProgressBar(0, 40, 'N/A', 'Quizzes');
