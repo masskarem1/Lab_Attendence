@@ -202,7 +202,8 @@
                         <img src="MUST.png" alt="MUST Logo" class="h-16 w-16 md:h-24 md:w-24 object-contain" onerror="this.src='https://placehold.co/100x100/1e3c72/FFFFFF?text=MUST&font=inter'"/>
                     </div>
                     <div class="mt-3 md:mt-0 md:ml-6 flex-grow">
-                        <h1 class="text-sm sm:text-lg md:text-3xl font-extrabold leading-tight tracking-tight text-slate-800 mb-2">Misr University for Science and Technology</h1>
+                        <!-- Increased mobile font size from text-sm to text-lg -->
+                        <h1 class="text-lg sm:text-xl md:text-3xl font-extrabold leading-tight tracking-tight text-slate-800 mb-2">Misr University for Science and Technology</h1>
                         <!-- Added items-center for mobile centering, md:items-start for desktop left align -->
                         <div class="text-[11px] sm:text-sm md:text-base font-medium text-slate-500 flex flex-col gap-0.5 items-center md:items-start">
                             <p>Faculty of Oral and Dental Surgery</p>
@@ -363,9 +364,10 @@
             
             <div class="relative z-10 flex flex-col items-center">
                 <!-- Icon with bounce animation -->
-                <div id="congratsIcon" class="text-9xl mb-8 animate-bounce drop-shadow-2xl filter">🏆</div>
+                <div id="congratsIcon" class="text-7xl sm:text-9xl mb-6 sm:mb-8 animate-bounce drop-shadow-2xl filter">🏆</div>
                 
-                <h2 id="congratsTitle" class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-tight">
+                <!-- Increased margin-bottom (mb-6) and padding to prevent clipping of 'g' -->
+                <h2 id="congratsTitle" class="text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 mb-6 pb-2 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-tight leading-tight">
                     Congratulations!
                 </h2>
                 
@@ -842,10 +844,8 @@
             let msg = `You are Ranked #${rank}!`;
             
             // Icon Styling (Gold) - Shiny and Metallic
-            // saturate: Boosts color to make it rich gold
-            // brightness & contrast: Creates the metallic shine
-            // drop-shadow: Adds a warm golden glow
-            let iconStyle = 'text-9xl mb-8 animate-bounce drop-shadow-[0_0_35px_rgba(234,179,8,0.6)] filter brightness-110 saturate-125 contrast-125';
+            // Updated to be responsive: text-7xl on mobile, text-9xl on desktop
+            let iconStyle = 'text-7xl sm:text-9xl mb-6 sm:mb-8 animate-bounce drop-shadow-[0_0_35px_rgba(234,179,8,0.6)] filter brightness-110 saturate-125 contrast-125';
 
             if (rank === 2) {
                 // Silver Settings - Metallic & Shiny
@@ -856,7 +856,7 @@
                 ringColor = 'focus:ring-gray-400';
                 
                 // Silver Icon Specifics:
-                iconStyle = 'text-9xl mb-8 animate-bounce drop-shadow-[0_0_35px_#C0C0C0] filter grayscale(1) brightness-125 contrast-150';
+                iconStyle = 'text-7xl sm:text-9xl mb-6 sm:mb-8 animate-bounce drop-shadow-[0_0_35px_#C0C0C0] filter grayscale(1) brightness-125 contrast-150';
                 
             } else if (rank === 3) {
                 // Bronze Settings - Metallic & Shiny
@@ -867,7 +867,7 @@
                 ringColor = 'focus:ring-orange-500';
                 
                 // Bronze Icon Specifics:
-                iconStyle = 'text-9xl mb-8 animate-bounce drop-shadow-[0_0_35px_rgba(180,83,9,0.6)] filter sepia-[.5] brightness-110 contrast-125';
+                iconStyle = 'text-7xl sm:text-9xl mb-6 sm:mb-8 animate-bounce drop-shadow-[0_0_35px_rgba(180,83,9,0.6)] filter sepia-[.5] brightness-110 contrast-125';
             }
 
             // Apply updates
@@ -879,7 +879,8 @@
             congratsBgGradient.className = `absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full blur-3xl opacity-30 -z-10 ${glowColor}`;
             
             // Apply Title Gradient
-            congratsTitle.className = `text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b ${titleGradient} mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-tight`;
+            // Updated to be responsive: text-3xl on mobile, text-5xl on desktop
+            congratsTitle.className = `text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b ${titleGradient} mb-3 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] tracking-tight`;
             
             // Apply Button Styles
             congratsButton.className = `w-full bg-gradient-to-b ${btnGradient} border-b-4 text-white font-bold py-4 px-10 rounded-2xl shadow-xl transform transition active:scale-95 active:border-b-0 active:translate-y-1 hover:brightness-110 uppercase tracking-wider text-lg focus:outline-none focus:ring-2 ${ringColor} focus:ring-opacity-50`;
